@@ -77,19 +77,19 @@ export const COPY = {
  * start/duration en secondes. Les timings des mots sont dans public/audio/voice/timings.json.
  */
 export const VOICE_30S = [
-  { id: "ad30-01", start: 0.05, duration: 3.89 },
-  { id: "ad30-02", start: 3.75, duration: 2.22 },
-  { id: "ad30-03", start: 5.98, duration: 3.06 },
-  { id: "ad30-04", start: 9.05, duration: 4.91 },
-  { id: "ad30-05", start: 14.0, duration: 4.05 },
-  { id: "ad30-06", start: 18.1, duration: 3.6 },
-  { id: "ad30-07", start: 21.72, duration: 2.64 },
-  { id: "ad30-08", start: 24.4, duration: 3.21 },
+  { id: "ad30-01", start: 0.05, duration: 4.08 },
+  { id: "ad30-02", start: 3.95, duration: 2.22 },
+  { id: "ad30-03", start: 6.18, duration: 3.03 },
+  { id: "ad30-04", start: 9.22, duration: 4.94 },
+  { id: "ad30-05", start: 14.18, duration: 4.0 },
+  { id: "ad30-06", start: 18.2, duration: 3.55 },
+  { id: "ad30-07", start: 21.77, duration: 2.64 },
+  { id: "ad30-08", start: 24.43, duration: 3.21 },
 ];
 
 export const VOICE_6S = [
-  { id: "bump-01", start: 0.05, duration: 2.61 },
-  { id: "bump-02", start: 2.55, duration: 2.93 },
+  { id: "bump-01", start: 0.05, duration: 2.64 },
+  { id: "bump-02", start: 2.55, duration: 2.98 },
 ];
 
 /** Volume musique hors voix / pendant la voix off (ducking automatique). */
@@ -101,7 +101,7 @@ export const SFX_VOLUME = 0.35;
 /** Tempo de la musique (sert aussi aux "pulsations" visuelles sur le temps). */
 export const BPM = 112;
 /** Instant (s) où le groove démarre dans la pub 30 s : les pulsations s'alignent dessus. */
-export const GROOVE_START_30S = 3.6;
+export const GROOVE_START_30S = 3.73;
 
 /**
  * Timeline de la pub 30 s, en frames (30 fps), calée sur la voix off :
@@ -109,53 +109,53 @@ export const GROOVE_START_30S = 3.6;
  */
 export const T30 = {
   hook: 0,
-  reveal: 108, // 3,6 s : vague + logo
-  step1: 179, // 6,0 s
-  step2: 271, // 9,0 s
-  step3: 419, // 14,0 s
-  benefits: 541, // 18,0 s
-  stats: 651, // 21,7 s
-  cta: 730, // 24,3 s
+  reveal: 112, // 3,7 s : vague + logo
+  step1: 185, // 6,2 s
+  step2: 276, // 9,2 s
+  step3: 425, // 14,2 s
+  benefits: 546, // 18,2 s
+  stats: 653, // 21,8 s
+  cta: 732, // 24,4 s
   end: 900,
 };
 
 /** Repères (frames absolues) = mots clés de la voix off. */
 export const CUES_30S = {
-  shipping: 51, // « Frais de port »
-  delay: 77, // « délais »
-  stamp: 99, // « la galère »
-  brand: 123, // « Swap'Îles »
-  island: 145, // « tout est déjà sur l'île »
-  shoot: 212, // « photo » -> déclencheur
-  online: 233, // « et hop » -> annonce en ligne
-  sell: 294, // « vends-le »
-  swap: 314, // « échange-le »
-  give: 341, // « donne-le »
-  pay: 363, // « Paiement »
-  card: 376, // « carte »
-  cash: 398, // « espèces »
-  handover: 441, // « remets-le en main propre »
-  relay: 473, // « point relais »
-  shop: 504, // « commerçant »
-  sold: 528, // fin de phrase -> VENDU !
-  money: 545, // « Gagne de l'argent »
-  local: 574, // « consomme local »
-  eco: 605, // « donne une seconde vie »
-  ads: 670, // « deux mille annonces »
-  users: 696, // « mille utilisateurs »
-  download: 734, // « Télécharge »
-  appStore: 789, // « App Store »
-  googlePlay: 803, // « Google Play »
+  shipping: 58, // « Frais de port »
+  delay: 84, // « délais »
+  stamp: 104, // « la galère »
+  brand: 129, // « Swap'Îles »
+  island: 151, // « tout est déjà sur l'île »
+  shoot: 218, // « photo » -> déclencheur
+  online: 239, // « et hop » -> annonce en ligne
+  sell: 298, // « vends-le »
+  swap: 319, // « échange-le »
+  give: 346, // « donne-le »
+  pay: 368, // « Paiement »
+  card: 381, // « carte »
+  cash: 403, // « espèces »
+  handover: 446, // « remets-le en main propre »
+  relay: 478, // « point relais »
+  shop: 509, // « commerçant »
+  sold: 531, // fin de phrase -> VENDU !
+  money: 548, // « Gagne de l'argent »
+  local: 577, // « consomme local »
+  eco: 607, // « donne une seconde vie »
+  ads: 672, // « deux mille annonces »
+  users: 698, // « mille utilisateurs »
+  download: 735, // « Télécharge »
+  appStore: 790, // « App Store »
+  googlePlay: 805, // « Google Play »
 };
 
 /** Timeline du bumper 6 s (frames). */
 export const T6 = { pitch: 76, cta: 138, end: 180 };
 export const CUES_6S = {
   delays: 44, // « Délais ? »
-  forget: 64, // « Oublie ! »
+  forget: 65, // « Oublie ! »
   buy: 78, // « Achète »
-  sell: 101, // « vends »
+  sell: 102, // « vends »
   give: 107, // « et donne »
-  reunion: 115, // « à La Réunion »
-  brand: 142, // « Swap'Îles »
+  reunion: 116, // « à La Réunion »
+  brand: 144, // « Swap'Îles »
 };

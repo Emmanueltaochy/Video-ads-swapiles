@@ -36,7 +36,7 @@ OUT_DIR = os.path.join(os.path.dirname(__file__), "..", "public", "audio", "voic
 # "Swap-îles" est écrit ainsi pour une bonne prononciation.
 SCRIPTS = {
     "ad30": [
-        ("ad30-01", "Commander en métropole ? Des frais de port, des délais… la galère !"),
+        ("ad30-01", "Commander depuis la métropole ? Des frais de port, des délais… la galère !"),
         ("ad30-02", "Avec Swap-îles, tout est déjà sur l'île !"),
         ("ad30-03", "Un : prends ton article en photo… et hop, il est en ligne !"),
         ("ad30-04", "Deux : vends-le, échange-le, ou donne-le ! Paiement par carte, ou en espèces."),
@@ -50,6 +50,12 @@ SCRIPTS = {
         ("bump-02", "Achète, vends et donne à La Réunion, avec Swap-îles !"),
     ],
 }
+
+
+# Phrase d'échauffement lue AVANT le script puis jetée : la voix multilingue
+# choisit sa langue sur les premiers mots, elle est ainsi déjà en français
+# quand arrive la phrase d'accroche.
+WARMUP = ("_warmup", "Bonjour à toutes et à tous, voici une nouvelle publicité en français pour La Réunion.")
 
 
 def norm(s):
@@ -93,12 +99,14 @@ async def main():
     timings = {}
     # Tout est synthétisé en un seul passage : plus il y a de texte français,
     # plus la détection de langue de la voix multilingue est fiable.
-    for name, segments in {"all": SCRIPTS["ad30"] + SCRIPTS["bump"]}.items():
+    for name, segments in {"all": [WARMUP] + SCRIPTS["ad30"] + SCRIPTS["bump"]}.items():
         full_text = " ".join(t for _, t in segments)
         full_mp3 = os.path.join(OUT_DIR, f"_{name}-full.mp3")
         words = await synth(full_text, full_mp3)
         spans = split_segments(segments, words)
         for i, (seg_id, start, end, seg_words) in enumerate(spans):
+            if seg_id == WARMUP[0]:
+                continue
             a = max(0.0, start - 0.06)
             nxt = spans[i + 1][1] if i + 1 < len(spans) else end + 0.6
             b = min(end + 0.18, nxt - 0.02)

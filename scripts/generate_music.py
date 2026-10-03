@@ -242,7 +242,7 @@ def render_30s():
     dur = 30.0
     buf = np.zeros((int(dur * SR), 2))
     # 0 -> 3.3 s : intro "problème" (pad + marimba seuls, plus sobre)
-    drop = 3.6  # = T30.reveal
+    drop = 3.73  # = T30.reveal
     intro_start = drop - 2 * BAR
     for b in range(2):
         groove_bar(buf, intro_start + b * BAR, b + 2, full=False, melody=False, tension=True)
@@ -264,7 +264,7 @@ def render_30s():
         n = int(rest * SR)
         buf[int(t * SR) : int(t * SR) + n] += tmp[:n]
     # changements de scène (doivent suivre T30 dans src/config.ts)
-    for t_imp in (5.97, 9.03, 13.97, 18.03, 21.7, 24.33):
+    for t_imp in (6.17, 9.2, 14.17, 18.2, 21.77, 24.4):
         impact(buf, t_imp)
     final_hit(buf, end_hit)
     # l'intro démarre avant 0 : on ne garde que [0, 30]
