@@ -6,6 +6,7 @@ import { TropicalBackground } from "../components/Background";
 import { Camera, Confetti } from "../components/Fx";
 import { Icon, IconName } from "../components/Icons";
 import { Logo } from "../components/Logo";
+import { useLayout } from "../layout";
 
 const L = (abs: number) => abs - T30.benefits;
 export const BENEFITS_DURATION = L(T30.cta);
@@ -24,19 +25,24 @@ const Card: React.FC<{ i: number; f: number }> = ({ i, f }) => {
   const float = Math.sin((f + i * 20) / 16) * 6;
   const money = Math.round(interpolate(f, [BENEFIT_TIMES[0] + 4, MONEY_DING], [0, COPY.moneyCounter], clamp));
   const iconSpin = pop(f, BENEFIT_TIMES[i] + 4, 8, 200);
+  // Vertical (Reels) : cartes horizontales empilées ; horizontal (YouTube) : cartes côte à côte
+  const { vertical } = useLayout();
   return (
     <div
       style={{
-        width: 470,
-        height: 440,
+        width: vertical ? 900 : 470,
+        height: vertical ? 220 : 440,
         borderRadius: 44,
         background: "#fff",
         boxShadow: "0 30px 70px rgba(0,30,25,0.30)",
         display: "flex",
-        flexDirection: "column",
+        flexDirection: vertical ? "row" : "column",
         alignItems: "center",
-        padding: "44px 30px 0",
-        transform: `translateY(${(1 - s) * 260 + float}px) rotate(${(1 - s) * (i - 1) * 25}deg) scale(${0.5 + 0.5 * s})`,
+        gap: vertical ? 34 : 0,
+        padding: vertical ? "0 40px" : "44px 30px 0",
+        transform: vertical
+          ? `translateX(${(1 - s) * (i % 2 ? 700 : -700)}px) translateY(${float}px) rotate(${(1 - s) * (i % 2 ? 12 : -12)}deg) scale(${0.6 + 0.4 * s})`
+          : `translateY(${(1 - s) * 260 + float}px) rotate(${(1 - s) * (i - 1) * 25}deg) scale(${0.5 + 0.5 * s})`,
         opacity: Math.min(1, s * 1.6),
         fontFamily: FONT,
         position: "relative",
@@ -44,8 +50,9 @@ const Card: React.FC<{ i: number; f: number }> = ({ i, f }) => {
     >
       <div
         style={{
-          width: 140,
-          height: 140,
+          width: vertical ? 130 : 140,
+          height: vertical ? 130 : 140,
+          flexShrink: 0,
           borderRadius: 42,
           background: ICON_BG[i],
           display: "flex",
@@ -57,8 +64,10 @@ const Card: React.FC<{ i: number; f: number }> = ({ i, f }) => {
       >
         <Icon name={ICONS[i]} size={88} color={i === 0 ? COLORS.deep : "#fff"} strokeWidth={2} />
       </div>
-      <div style={{ marginTop: 34, fontWeight: 800, fontSize: 50, color: COLORS.deep, letterSpacing: -1, textAlign: "center", lineHeight: 1.05 }}>{b.title}</div>
-      <div style={{ marginTop: 14, fontWeight: 500, fontSize: 30, color: "#4d625d", textAlign: "center", lineHeight: 1.3, whiteSpace: "pre-line" }}>{b.sub}</div>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: vertical ? "flex-start" : "center" }}>
+        <div style={{ marginTop: vertical ? 0 : 34, fontWeight: 800, fontSize: vertical ? 48 : 50, color: COLORS.deep, letterSpacing: -1, textAlign: vertical ? "left" : "center", lineHeight: 1.05 }}>{b.title}</div>
+        <div style={{ marginTop: vertical ? 8 : 14, fontWeight: 500, fontSize: vertical ? 30 : 30, color: "#4d625d", textAlign: vertical ? "left" : "center", lineHeight: 1.3, whiteSpace: vertical ? "normal" : "pre-line" }}>{vertical ? b.sub.replace("\n", " ") : b.sub}</div>
+      </div>
       {i === 0 && (
         <div
           style={{
@@ -87,20 +96,24 @@ export const BenefitsScene: React.FC = () => {
   const toStats = pop(f, STATS, 14, 120);
   const leave = out(f, BENEFITS_DURATION - 4, BENEFITS_DURATION);
   const groove = Math.round(GROOVE_START_30S * FPS) - T30.benefits;
+  const { W, vertical } = useLayout();
   return (
     <AbsoluteFill>
       <TropicalBackground variant="lagoon" />
       <Camera duration={BENEFITS_DURATION} zoom={[1.03, 1]} punches={[...BENEFIT_TIMES, ...STAT_TIMES]} pulse={groove}>
-        <div style={{ position: "absolute", left: 150, top: 62 }}>
-          <Logo width={250} color="#fff" />
-        </div>
+        {!vertical && (
+          <div style={{ position: "absolute", left: 150, top: 62 }}>
+            <Logo width={250} color="#fff" />
+          </div>
+        )}
         <AbsoluteFill style={{ alignItems: "center", fontFamily: FONT, opacity: leave }}>
           <div
             style={{
               display: "flex",
-              gap: 56,
-              marginTop: 200,
-              transform: `translateY(${toStats * -50}px) scale(${1 - 0.22 * toStats})`,
+              flexDirection: vertical ? "column" : "row",
+              gap: vertical ? 26 : 56,
+              marginTop: vertical ? 280 : 200,
+              transform: vertical ? `scale(${1 - 0.24 * toStats})` : `translateY(${toStats * -50}px) scale(${1 - 0.22 * toStats})`,
               transformOrigin: "50% 0%",
             }}
           >
@@ -108,7 +121,7 @@ export const BenefitsScene: React.FC = () => {
               <Card key={i} i={i} f={f} />
             ))}
           </div>
-          <div style={{ position: "absolute", top: 600, display: "flex", gap: 40 }}>
+          <div style={{ position: "absolute", top: vertical ? 880 : 600, display: "flex", flexDirection: vertical ? "column" : "row", alignItems: "center", gap: vertical ? 24 : 40 }}>
             {COPY.stats.map((st, i) => {
               const start = STAT_TIMES[i];
               const v = interpolate(f, [start, start + 18], [0, st.value], { ...clamp, easing: (x) => 1 - (1 - x) ** 3 });
@@ -132,18 +145,18 @@ export const BenefitsScene: React.FC = () => {
                   <div style={{ width: 84, height: 84, borderRadius: "50%", background: "rgba(255,255,255,0.14)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <Icon name={i === 0 ? "tag" : "users"} size={50} color={COLORS.sun} strokeWidth={2.3} />
                   </div>
-                  <span style={{ fontWeight: 900, fontSize: 76, color: COLORS.sun, letterSpacing: -1 }}>
+                  <span style={{ fontWeight: 900, fontSize: vertical ? 66 : 76, color: COLORS.sun, letterSpacing: -1 }}>
                     {st.prefix}
                     {formatNumber(v)}
                   </span>
-                  <span style={{ fontWeight: 700, fontSize: 50 }}>{st.label}</span>
+                  <span style={{ fontWeight: 700, fontSize: vertical ? 44 : 50 }}>{st.label}</span>
                 </div>
               );
             })}
           </div>
         </AbsoluteFill>
-        <Confetti at={MONEY_DING} x={720} y={230} count={40} seed="money" spread={0.6} />
-        <Confetti at={STAT_TIMES[1] + 16} x={960} y={680} count={80} seed="stats" />
+        <Confetti at={MONEY_DING} x={vertical ? 900 : 720} y={vertical ? 300 : 230} count={40} seed="money" spread={0.6} />
+        <Confetti at={STAT_TIMES[1] + 16} x={W / 2} y={vertical ? 1000 : 680} count={80} seed="stats" />
       </Camera>
     </AbsoluteFill>
   );

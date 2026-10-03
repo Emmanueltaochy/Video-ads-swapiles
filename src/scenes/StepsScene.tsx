@@ -8,6 +8,7 @@ import { Camera, Confetti, KineticText, Sticker } from "../components/Fx";
 import { Icon, IconName } from "../components/Icons";
 import { Logo } from "../components/Logo";
 import { Phone, Screenshot } from "../components/Phone";
+import { useLayout } from "../layout";
 
 /* Repères en frames locales (0 = début de la scène) */
 const L = (abs: number) => abs - T30.step1;
@@ -17,10 +18,54 @@ export const STEPS_DURATION = L(T30.benefits);
 const C = Object.fromEntries(Object.entries(CUES_30S).map(([k, v]) => [k, L(v)])) as Record<keyof typeof CUES_30S, number>;
 
 const PHONE_W = 380;
-const PHONE_X = 1290;
-const PHONE_Y = 50;
-/** Centre approximatif de l'écran du téléphone (pour confettis / stickers). */
-const PHONE_CX = PHONE_X + PHONE_W / 2;
+
+/** Positions des éléments selon le format (YouTube horizontal / Reels vertical). */
+const LAYOUTS = {
+  landscape: {
+    phone: { x: 1290, y: 50, scale: 1 },
+    phoneCenter: { x: 1480, y: 450 },
+    logo: true,
+    progress: { left: 150, top: 175, justify: "flex-start" as const, font: 26 },
+    header: { left: 150, top: 300, width: 1000, num: 110, title: 78, subIndent: 140, sub: 38 },
+    chips: [],
+    chipSize: 34,
+    map: { left: 975, top: 560, scale: 1 },
+    stamp: { x: 1480, y: 430, font: 82 },
+    stickers: {
+      likes: { x: 1230, y: 260 },
+      views: { x: 1770, y: 560 },
+      dispo: { x: 1760, y: 250 },
+      protect: { x: 1230, y: 720 },
+      near: { x: 1745, y: 300 },
+      money: { x: 1770, y: 600 },
+    },
+  },
+  vertical: {
+    phone: { x: 350, y: 660, scale: 0.9 },
+    phoneCenter: { x: 540, y: 980 },
+    logo: false,
+    progress: { left: 0, top: 262, justify: "center" as const, font: 24 },
+    header: { left: 60, top: 345, width: 960, num: 92, title: 62, subIndent: 116, sub: 32 },
+    chips: [
+      { x: 50, y: 760 },
+      { x: 50, y: 850 },
+      { x: 715, y: 760 },
+      { x: 735, y: 850 },
+    ],
+    chipSize: 28,
+    map: { left: 40, top: 930, scale: 0.85 },
+    stamp: { x: 540, y: 980, font: 70 },
+    stickers: {
+      likes: { x: 220, y: 820 },
+      views: { x: 860, y: 1000 },
+      dispo: { x: 860, y: 1060 },
+      protect: { x: 230, y: 1080 },
+      near: { x: 850, y: 800 },
+      money: { x: 850, y: 1160 },
+    },
+  },
+};
+const useSteps = () => (useLayout().vertical ? LAYOUTS.vertical : LAYOUTS.landscape);
 
 /* ------------------------------------------------------------ écrans du téléphone */
 
@@ -209,6 +254,7 @@ const StepHeader: React.FC<{ index: number; f: number; start: number; end: numbe
   titleAt,
   subAt,
 }) => {
+  const Lay = useSteps().header;
   if (f < start - 1 || f > end) return null;
   const step = COPY.steps[index];
   const leave = index < 2 ? out(f, end - 6, end) : out(f, end - 8, end);
@@ -217,24 +263,24 @@ const StepHeader: React.FC<{ index: number; f: number; start: number; end: numbe
     <div
       style={{
         position: "absolute",
-        left: 150,
-        top: 300,
-        width: 1000,
+        left: Lay.left,
+        top: Lay.top,
+        width: Lay.width,
         fontFamily: FONT,
         opacity: leave,
         transform: `translateX(${(1 - leave) * -80}px)`,
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: 30 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: Lay.num * 0.27 }}>
         <div
           style={{
-            width: 110,
-            height: 110,
+            width: Lay.num,
+            height: Lay.num,
             borderRadius: "50%",
             background: COLORS.sun,
             color: COLORS.deep,
             fontWeight: 900,
-            fontSize: 66,
+            fontSize: Lay.num * 0.6,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -248,14 +294,14 @@ const StepHeader: React.FC<{ index: number; f: number; start: number; end: numbe
         <KineticText
           text={step.title}
           at={titleAt}
-          style={{ fontWeight: 800, fontSize: 78, color: "#fff", lineHeight: 1.05, letterSpacing: -1.5, textShadow: "0 6px 24px rgba(0,0,0,0.25)" }}
+          style={{ fontWeight: 800, fontSize: Lay.title, color: "#fff", lineHeight: 1.05, letterSpacing: -1.5, textShadow: "0 6px 24px rgba(0,0,0,0.25)" }}
         />
       </div>
       <KineticText
         text={step.sub}
         at={subAt}
         stagger={2}
-        style={{ marginTop: 26, marginLeft: 140, fontWeight: 600, fontSize: 38, color: COLORS.lagoonLight, lineHeight: 1.3 }}
+        style={{ marginTop: Lay.sub * 0.68, marginLeft: Lay.subIndent, fontWeight: 600, fontSize: Lay.sub, color: COLORS.lagoonLight, lineHeight: 1.3 }}
       />
     </div>
   );
@@ -264,8 +310,22 @@ const StepHeader: React.FC<{ index: number; f: number; start: number; end: numbe
 const Progress: React.FC<{ f: number }> = ({ f }) => {
   const active = f < S2 ? 0 : f < S3 ? 1 : 2;
   const appear = pop(f, 2, 14);
+  const Lay = useSteps().progress;
   return (
-    <div style={{ position: "absolute", left: 150, top: 175, display: "flex", gap: 14, transform: `translateY(${(1 - appear) * -30}px)`, opacity: appear, fontFamily: FONT }}>
+    <div
+      style={{
+        position: "absolute",
+        left: Lay.left,
+        right: Lay.justify === "center" ? 0 : undefined,
+        top: Lay.top,
+        display: "flex",
+        justifyContent: Lay.justify,
+        gap: 14,
+        transform: `translateY(${(1 - appear) * -30}px)`,
+        opacity: appear,
+        fontFamily: FONT,
+      }}
+    >
       {COPY.stepLabels.map((label, i) => {
         const on = i === active;
         const done = i < active;
@@ -282,7 +342,7 @@ const Progress: React.FC<{ f: number }> = ({ f }) => {
               background: on ? "#fff" : "rgba(255,255,255,0.12)",
               color: on ? COLORS.primary : "rgba(255,255,255,0.85)",
               fontWeight: 700,
-              fontSize: 26,
+              fontSize: Lay.font,
               transform: `scale(${0.85 + 0.15 * bump})`,
             }}
           >
@@ -317,21 +377,36 @@ const PayChips: React.FC<{ f: number }> = ({ f }) => {
     { label: COPY.payChips[0], icon: "card", at: C.card },
     { label: COPY.payChips[1], icon: "cash", at: C.cash },
   ];
+  const { vertical } = useLayout();
+  const Lay = useSteps();
   if (f < S2 || f > S3) return null;
   const leave = out(f, S3 - 6, S3);
+  const chip = (it: (typeof items)[number], i: number, style?: React.CSSProperties) => {
+    const s = pop(f, it.at, 9, 200);
+    return (
+      <div key={it.label} style={{ transform: `scale(${s}) rotate(${(1 - s) * -15 + (vertical ? (i % 2 ? 4 : -4) : 0)}deg)`, ...style }}>
+        <Chip icon={it.icon} label={it.label} size={Lay.chipSize} />
+      </div>
+    );
+  };
+  if (vertical) {
+    // Format vertical : pastilles de part et d'autre du téléphone
+    return (
+      <div style={{ position: "absolute", inset: 0, opacity: leave, zIndex: 25 }}>
+        {items.map((it, i) => chip(it, i, { position: "absolute", left: Lay.chips[i].x, top: Lay.chips[i].y }))}
+      </div>
+    );
+  }
   return (
     <div style={{ position: "absolute", left: 290, top: 640, display: "flex", flexWrap: "wrap", gap: 18, width: 700, opacity: leave }}>
-      {items.map((it) => (
-        <div key={it.label} style={{ transform: `scale(${pop(f, it.at, 9, 200)}) rotate(${(1 - pop(f, it.at, 9, 200)) * -15}deg)` }}>
-          <Chip icon={it.icon} label={it.label} size={34} />
-        </div>
-      ))}
+      {items.map((it, i) => chip(it, i))}
     </div>
   );
 };
 
 /** Mini-carte de La Réunion avec des points relais qui apparaissent. */
 const RelayMap: React.FC<{ f: number }> = ({ f }) => {
+  const Lay = useSteps().map;
   if (f < S3) return null;
   const card = pop(f, C.relay, 10, 170);
   const pins = [
@@ -344,14 +419,15 @@ const RelayMap: React.FC<{ f: number }> = ({ f }) => {
     <div
       style={{
         position: "absolute",
-        left: 975,
-        top: 560,
+        left: Lay.left,
+        top: Lay.top,
         width: 330,
         height: 300,
         borderRadius: 34,
         background: "#fff",
         boxShadow: "0 25px 60px rgba(0,20,15,0.35)",
-        transform: `scale(${card}) rotate(${-4 - (1 - card) * 20}deg)`,
+        transform: `scale(${card * Lay.scale}) rotate(${-4 - (1 - card) * 20}deg)`,
+        transformOrigin: Lay.scale === 1 ? undefined : "0 0",
         fontFamily: FONT,
         padding: 18,
         zIndex: 3,
@@ -386,14 +462,15 @@ const RelayMap: React.FC<{ f: number }> = ({ f }) => {
 
 /** Tampon « VENDU ! » posé sur le téléphone à la fin de l'étape 3. */
 const SoldStamp: React.FC<{ f: number }> = ({ f }) => {
+  const Lay = useSteps().stamp;
   if (f < C.sold) return null;
   const s = pop(f, C.sold, 9, 260);
   return (
     <div
       style={{
         position: "absolute",
-        left: PHONE_CX,
-        top: 430,
+        left: Lay.x,
+        top: Lay.y,
         transform: `translate(-50%, -50%) rotate(-12deg) scale(${interpolate(s, [0, 1], [2.4, 1])})`,
         opacity: Math.min(1, s * 1.6),
         padding: "16px 40px",
@@ -403,7 +480,7 @@ const SoldStamp: React.FC<{ f: number }> = ({ f }) => {
         color: COLORS.coral,
         fontFamily: FONT,
         fontWeight: 900,
-        fontSize: 82,
+        fontSize: Lay.font,
         letterSpacing: 2,
         whiteSpace: "nowrap",
         boxShadow: "0 20px 50px rgba(0,0,0,0.35)",
@@ -426,14 +503,20 @@ export const StepsScene: React.FC = () => {
   const rotY = -12 + swing * -1;
   const step = f < S2 ? 0 : f < S3 ? 1 : 2;
   const groove = Math.round(GROOVE_START_30S * FPS) - T30.step1;
+  const Lay = useSteps();
+  const { vertical } = useLayout();
+  const st = Lay.stickers;
+  const pc = Lay.phoneCenter;
 
   return (
     <AbsoluteFill>
       <TropicalBackground variant="deep" />
       <Camera duration={STEPS_DURATION} zoom={[1, 1.04]} punches={[S2, S3, C.shoot, C.online, C.sold]} pulse={groove}>
-        <div style={{ position: "absolute", left: 150, top: 62 }}>
-          <Logo width={250} color="#fff" />
-        </div>
+        {Lay.logo && (
+          <div style={{ position: "absolute", left: 150, top: 62 }}>
+            <Logo width={250} color="#fff" />
+          </div>
+        )}
         <Progress f={f} />
         <StepHeader index={0} f={f} start={0} end={S2} titleAt={[3, 6, 9, 12, 14]} subAt={C.online - 4} />
         <StepHeader index={1} f={f} start={S2} end={S3} titleAt={[C.sell, C.swap, C.give, C.give + 2]} subAt={[C.pay, C.pay + 3, C.card, C.cash, C.cash + 2, C.cash + 4]} />
@@ -443,28 +526,31 @@ export const StepsScene: React.FC = () => {
         <div
           style={{
             position: "absolute",
-            left: PHONE_X,
-            top: PHONE_Y,
+            left: Lay.phone.x,
+            top: Lay.phone.y,
             perspective: 1600,
-            transform: `translateX(${(1 - enter) * 900}px) translateY(${bob}px)`,
+            transformOrigin: "50% 0",
+            transform: vertical
+              ? `translateY(${(1 - enter) * 1200 + bob}px) scale(${Lay.phone.scale})`
+              : `translateX(${(1 - enter) * 900}px) translateY(${bob}px)`,
           }}
         >
-          <div style={{ transform: `rotateY(${rotY}deg) rotateZ(${2 + (1 - enter) * 20}deg)` }}>
+          <div style={{ transform: `rotateY(${vertical ? rotY * 0.6 : rotY}deg) rotateZ(${(vertical ? 0 : 2) + (1 - enter) * 20}deg)` }}>
             <Phone width={PHONE_W} navActive={step === 0 ? 2 : step === 1 ? 3 : 0} nav={step !== 0}>
               <PhoneScreens f={f} />
             </Phone>
           </div>
         </div>
         {/* stickers autour du téléphone */}
-        <Sticker x={1230} y={260} at={C.online + 8} until={S2 - 4} icon="heart" label="12 favoris" tilt={-6} />
-        <Sticker x={1770} y={560} at={C.online + 16} until={S2 - 2} icon="search" label="48 vues" color={COLORS.lagoon} tilt={5} />
-        <Sticker x={1760} y={250} at={C.sell + 10} until={C.pay} icon="message" label="Dispo ?" color={COLORS.primary} tilt={6} />
-        <Sticker x={1230} y={720} at={C.card + 4} until={S3 - 2} icon="check" label="Paiement protégé" color={COLORS.primary} tilt={-4} />
-        <Sticker x={1745} y={300} at={C.handover + 6} until={C.sold} icon="users" label="Près de chez toi" color={COLORS.lagoon} tilt={4} />
+        <Sticker {...st.likes} at={C.online + 8} until={S2 - 4} icon="heart" label="12 favoris" tilt={-6} />
+        <Sticker {...st.views} at={C.online + 16} until={S2 - 2} icon="search" label="48 vues" color={COLORS.lagoon} tilt={5} />
+        <Sticker {...st.dispo} at={C.sell + 10} until={C.pay} icon="message" label="Dispo ?" color={COLORS.primary} tilt={6} />
+        <Sticker {...st.protect} at={C.card + 4} until={S3 - 2} icon="check" label="Paiement protégé" color={COLORS.primary} tilt={-4} />
+        <Sticker {...st.near} at={C.handover + 6} until={C.sold} icon="users" label="Près de chez toi" color={COLORS.lagoon} tilt={4} />
         <SoldStamp f={f} />
-        <Sticker x={1770} y={600} at={C.sold + 6} icon="coins" label="+25 €" color={COLORS.sun} tilt={-6} />
-        <Confetti at={C.online} x={PHONE_CX} y={460} count={50} seed="online" spread={0.8} />
-        <Confetti at={C.sold} x={PHONE_CX} y={430} count={70} seed="sold" />
+        <Sticker {...st.money} at={C.sold + 6} icon="coins" label="+25 €" color={COLORS.sun} tilt={-6} />
+        <Confetti at={C.online} x={pc.x} y={pc.y} count={50} seed="online" spread={0.8} />
+        <Confetti at={C.sold} x={pc.x} y={pc.y - 20} count={70} seed="sold" />
       </Camera>
     </AbsoluteFill>
   );

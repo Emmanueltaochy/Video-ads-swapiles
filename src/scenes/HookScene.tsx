@@ -8,13 +8,17 @@ import { Camera, Confetti, KineticText } from "../components/Fx";
 import { Icon } from "../components/Icons";
 import { Logo } from "../components/Logo";
 import { WaveReveal } from "../components/Wave";
+import { useLayout } from "../layout";
 
 const DURATION = T30.step1 - T30.hook;
 
-const A = { x: 330, y: 560 }; // Métropole
-const B = { x: 1590, y: 600 }; // La Réunion
-const CTRL = { x: 960, y: 230 };
-const arc = (t: number) => ({
+type Pt = { x: number; y: number };
+/** Trajet Métropole (A) -> La Réunion (B), courbe de Bézier passant par CTRL. */
+const GEO = {
+  landscape: { A: { x: 330, y: 560 }, B: { x: 1590, y: 600 }, CTRL: { x: 960, y: 230 } },
+  vertical: { A: { x: 250, y: 640 }, B: { x: 790, y: 960 }, CTRL: { x: 960, y: 560 } },
+};
+const makeArc = (A: Pt, B: Pt, CTRL: Pt) => (t: number) => ({
   x: (1 - t) ** 2 * A.x + 2 * (1 - t) * t * CTRL.x + t ** 2 * B.x,
   y: (1 - t) ** 2 * A.y + 2 * (1 - t) * t * CTRL.y + t ** 2 * B.y,
 });
@@ -42,8 +46,10 @@ const Place: React.FC<{ x: number; y: number; label: string; delay: number; colo
   );
 };
 
-const CounterCard: React.FC<{ x: number; icon: "euro" | "clock"; label: string; value: string; delay: number }> = ({
+const CounterCard: React.FC<{ x: number; y: number; width: number; icon: "euro" | "clock"; label: string; value: string; delay: number }> = ({
   x,
+  y,
+  width,
   icon,
   label,
   value,
@@ -56,8 +62,8 @@ const CounterCard: React.FC<{ x: number; icon: "euro" | "clock"; label: string; 
       style={{
         position: "absolute",
         left: x,
-        top: 690,
-        width: 500,
+        top: y,
+        width,
         height: 150,
         borderRadius: 32,
         background: "rgba(255,255,255,0.08)",
@@ -83,6 +89,9 @@ const CounterCard: React.FC<{ x: number; icon: "euro" | "clock"; label: string; 
 
 const Problem: React.FC = () => {
   const frame = useCurrentFrame();
+  const { W, H, vertical } = useLayout();
+  const { A, B, CTRL } = vertical ? GEO.vertical : GEO.landscape;
+  const arc = makeArc(A, B, CTRL);
   // Le colis avance... beaucoup trop lentement (et ralentit encore)
   const t = interpolate(frame, [4, 100], [0.02, 0.42], { ...clamp, easing: (x) => 1 - (1 - x) ** 2 });
   const p = arc(t);
@@ -103,23 +112,23 @@ const Problem: React.FC = () => {
     <AbsoluteFill style={{ background: "radial-gradient(110% 90% at 50% 20%, #1d3b45 0%, #10242c 55%, #08151a 100%)" }}>
       <Camera duration={110} zoom={[1.08, 1]} punches={[C.shipping, C.delay]} shakeAt={[C.stamp]}>
         <KineticText
-          text={COPY.hookQuestion}
+          text={vertical ? COPY.hookQuestion.replace(" la ", "\nla ") : COPY.hookQuestion}
           at={[1, 4, 7, 12]}
           highlight={["métropole"]}
           highlightColor={COLORS.coral}
           style={{
             position: "absolute",
-            top: 90,
+            top: vertical ? 290 : 90,
             width: "100%",
             textAlign: "center",
             fontWeight: 800,
-            fontSize: 92,
+            fontSize: vertical ? 86 : 92,
             color: "#fff",
             letterSpacing: -1.5,
             textShadow: "0 8px 30px rgba(0,0,0,0.35)",
           }}
         />
-        <svg width={1920} height={1080} style={{ position: "absolute", inset: 0 }}>
+        <svg width={W} height={H} style={{ position: "absolute", inset: 0 }}>
           <path d={dash} fill="none" stroke="rgba(255,255,255,0.45)" strokeWidth={5} strokeDasharray="4 22" strokeLinecap="round" strokeDashoffset={-frame * 2} />
         </svg>
         <Place x={A.x} y={A.y} label="Métropole" delay={2} color="#9fb3bb" />
@@ -142,14 +151,14 @@ const Problem: React.FC = () => {
         >
           <Icon name="box" size={84} color="#5a3410" strokeWidth={1.8} />
         </div>
-        <CounterCard x={400} icon="euro" label={COPY.hookShipping} value={`+${shipping} €`} delay={C.shipping} />
-        <CounterCard x={1020} icon="clock" label={COPY.hookDelay} value={days >= 21 ? COPY.hookDelayValue : `${days} jour${days > 1 ? "s" : ""}`} delay={C.delay} />
+        <CounterCard x={vertical ? 60 : 400} y={vertical ? 1110 : 690} width={vertical ? 470 : 500} icon="euro" label={COPY.hookShipping} value={`+${shipping} €`} delay={C.shipping} />
+        <CounterCard x={vertical ? 550 : 1020} y={vertical ? 1110 : 690} width={vertical ? 470 : 500} icon="clock" label={COPY.hookDelay} value={days >= 21 ? COPY.hookDelayValue : `${days} jour${days > 1 ? "s" : ""}`} delay={C.delay} />
         {frame >= C.stamp && (
           <div
             style={{
               position: "absolute",
-              left: 960,
-              top: 445,
+              left: W / 2,
+              top: vertical ? 800 : 445,
               transform: `translate(-50%, -50%) rotate(-8deg) scale(${stampScale})`,
               opacity: Math.min(1, stamp * 1.5),
               border: `10px solid ${COLORS.coral}`,
@@ -157,7 +166,7 @@ const Problem: React.FC = () => {
               padding: "14px 46px",
               fontFamily: FONT,
               fontWeight: 900,
-              fontSize: 76,
+              fontSize: vertical ? 58 : 76,
               color: COLORS.coral,
               textTransform: "uppercase",
               letterSpacing: 2,
@@ -179,26 +188,27 @@ const Reveal: React.FC = () => {
   const logo = pop(frame, C.brand - 4, 9, 150);
   const chip = pop(frame, C.island + 12);
   const leave = out(frame, DURATION - 7, DURATION);
+  const { W, vertical } = useLayout();
   return (
     <AbsoluteFill>
       <TropicalBackground variant="deep" />
       <Camera duration={DURATION} zoom={[1.06, 1]} punches={[C.brand]} pulse={T30.reveal}>
         <AbsoluteFill style={{ alignItems: "center", fontFamily: FONT, opacity: leave, transform: `scale(${0.85 + 0.15 * leave})` }}>
-          <div style={{ marginTop: 170, transform: `scale(${logo}) rotate(${(1 - logo) * -10}deg)`, filter: "drop-shadow(0 18px 40px rgba(0,0,0,0.3))" }}>
-            <Logo width={900} color="#fff" />
+          <div style={{ marginTop: vertical ? 420 : 170, transform: `scale(${logo}) rotate(${(1 - logo) * -10}deg)`, filter: "drop-shadow(0 18px 40px rgba(0,0,0,0.3))" }}>
+            <Logo width={vertical ? 820 : 900} color="#fff" />
           </div>
           <KineticText
-            text={COPY.hookAnswer}
+            text={vertical ? COPY.hookAnswer.replace(" sur", "\nsur") : COPY.hookAnswer}
             at={C.island}
             stagger={3}
             highlight={["l'île"]}
-            style={{ marginTop: 40, fontWeight: 800, fontSize: 84, color: "#fff", letterSpacing: -1, textShadow: "0 8px 30px rgba(0,0,0,0.3)" }}
+            style={{ marginTop: 40, fontWeight: 800, fontSize: 84, color: "#fff", letterSpacing: -1, textAlign: "center", textShadow: "0 8px 30px rgba(0,0,0,0.3)" }}
           />
           <div style={{ marginTop: 34, transform: `scale(${chip})` }}>
             <Chip icon="pin" label={COPY.territory} size={38} />
           </div>
         </AbsoluteFill>
-        <Confetti at={C.brand} x={960} y={330} count={70} seed="reveal" />
+        <Confetti at={C.brand} x={W / 2} y={vertical ? 560 : 330} count={70} seed="reveal" />
       </Camera>
     </AbsoluteFill>
   );

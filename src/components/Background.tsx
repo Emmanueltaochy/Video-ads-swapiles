@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
+import { useLayout } from "../layout";
 import { COLORS } from "../config";
 
 /** Génère le tracé d'une palme de cocotier (tige + folioles). */
@@ -72,7 +73,10 @@ export const TropicalBackground: React.FC<{
         : `radial-gradient(120% 100% at 50% 0%, #ffffff 0%, ${COLORS.sand} 60%, #f4e3c4 100%)`;
   const frondColor = variant === "light" ? "rgba(19,106,93,0.16)" : "rgba(3,30,26,0.55)";
   const frondColor2 = variant === "light" ? "rgba(19,106,93,0.10)" : "rgba(3,30,26,0.35)";
-  const sunX = interpolate(frame, [0, 900], [1450, 1550]);
+  const { W, H, vertical } = useLayout();
+  const sunX = interpolate(frame, [0, 900], [W * 0.755, W * 0.807]);
+  const waveTop = H * 0.59;
+  const waveGap = vertical ? 110 : 70;
 
   return (
     <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
@@ -92,13 +96,13 @@ export const TropicalBackground: React.FC<{
         }}
       />
       {/* reflets d'eau qui ondulent */}
-      <svg width={1920} height={1080} style={{ position: "absolute", inset: 0, opacity: variant === "light" ? 0.35 : 0.18 }}>
+      <svg width={W} height={H} style={{ position: "absolute", inset: 0, opacity: variant === "light" ? 0.35 : 0.18 }}>
         {new Array(7).fill(0).map((_, i) => {
-          const y = 640 + i * 70;
+          const y = waveTop + i * waveGap;
           const amp = 14 + i * 3;
           const ph = frame / (24 + i * 3) + i;
           let d = `M -20 ${y}`;
-          for (let x = 0; x <= 1960; x += 40) {
+          for (let x = 0; x <= W + 40; x += 40) {
             d += ` L ${x} ${y + Math.sin(x / (140 + i * 25) + ph) * amp}`;
           }
           return (
@@ -115,11 +119,18 @@ export const TropicalBackground: React.FC<{
         })}
       </svg>
       {fronds && (
-        <svg width={1920} height={1080} viewBox="0 0 1920 1080" style={{ position: "absolute", inset: 0 }}>
-          <Frond x={-90} y={-40} rotate={28} scale={0.95} color={frondColor2} phase={0.3} />
-          <Frond x={-60} y={60} rotate={8} scale={0.8} color={frondColor} phase={1.4} />
-          <Frond x={2010} y={-60} rotate={30} scale={1} color={frondColor2} phase={2.1} flip />
-          <Frond x={1990} y={40} rotate={12} scale={0.75} color={frondColor} phase={0.9} flip />
+        <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ position: "absolute", inset: 0 }}>
+          <Frond x={-90} y={-40} rotate={28} scale={vertical ? 0.7 : 0.95} color={frondColor2} phase={0.3} />
+          <Frond x={-60} y={60} rotate={8} scale={vertical ? 0.6 : 0.8} color={frondColor} phase={1.4} />
+          <Frond x={W + 90} y={-60} rotate={30} scale={vertical ? 0.72 : 1} color={frondColor2} phase={2.1} flip />
+          <Frond x={W + 70} y={40} rotate={12} scale={vertical ? 0.55 : 0.75} color={frondColor} phase={0.9} flip />
+          {vertical && (
+            <>
+              {/* palmes qui remontent du bas pour habiller le format vertical */}
+              <Frond x={-80} y={H + 40} rotate={-40} scale={0.75} color={frondColor2} phase={1.1} />
+              <Frond x={W + 80} y={H + 60} rotate={-38} scale={0.7} color={frondColor2} phase={2.6} flip />
+            </>
+          )}
         </svg>
       )}
     </AbsoluteFill>

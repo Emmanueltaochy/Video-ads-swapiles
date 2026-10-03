@@ -1,6 +1,7 @@
 import React from "react";
 import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from "remotion";
 import { COLORS } from "../config";
+import { useLayout } from "../layout";
 
 /**
  * Transition "vague" : une vague verte monte du bas et recouvre l'écran,
@@ -12,14 +13,13 @@ export const WaveReveal: React.FC<{
   children: React.ReactNode;
 }> = ({ start, duration = 16, children }) => {
   const frame = useCurrentFrame();
+  const { W, H } = useLayout();
   const p = interpolate(frame, [start, start + duration], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.bezier(0.65, 0, 0.35, 1),
   });
   if (p <= 0) return null;
-  const H = 1080;
-  const W = 1920;
   const amp = 60 * Math.sin(Math.PI * p);
   const level = (H + 140) * (1 - p) - 70;
   const mk = (offset: number, lvl: number) => {

@@ -6,13 +6,14 @@ Deux publicités YouTube pour **Swap'Îles**, la seconde main des îles (version
 |---|---|---|---|
 | `SwapilesAd30s` | 1920×1080, 30 fps | 30 s | In-stream désactivable après 5 s |
 | `SwapilesBumper6s` | 1920×1080, 30 fps | 6 s | Bumper non désactivable |
+| `SwapilesReel30s` | 1080×1920, 30 fps | 30 s | Instagram Reels (même voix, musique et timeline, mise en page verticale) |
 
 ## Démarrer
 
 ```bash
 npm install
 npm run dev            # Remotion Studio (prévisualisation) -> http://localhost:3000
-npm run render:all     # exporte out/swapiles-ad-30s.mp4 et out/swapiles-bumper-6s.mp4
+npm run render:all     # exporte out/swapiles-ad-30s.mp4, out/swapiles-bumper-6s.mp4 et out/swapiles-reel-30s.mp4
 ```
 
 ## Storyboard (30 s) — V2 dynamique
@@ -31,6 +32,10 @@ La timeline est **calée sur la voix off** (repères au mot près dans `src/conf
 | 24,4–30 s | Logo + bouton « Télécharge Swap'Îles gratuitement » (tapé par une main) + App Store / Google Play + réseaux + swapiles.com | « Télécharge Swap'Îles gratuitement, sur l'App Store et Google Play ! » |
 
 Le bas de l'écran (210 px, `SAFE_BOTTOM`) reste libre pour les boutons YouTube.
+
+### Version Instagram Reels (vertical)
+
+Les scènes détectent le format (`src/layout.ts` → `useLayout()`) et basculent sur une mise en page verticale : textes en haut, téléphone au centre, pastilles de paiement de part et d'autre, cartes bénéfices empilées. Tout le texte reste dans la **zone sûre Reels** (`REEL_SAFE` : y 250 → 1300, hors colonne d'icônes à droite), car l'interface Instagram recouvre le haut (compte), le bas (légende, bouton d'action) et la droite (j'aime, commentaires).
 
 ## Modifier la pub
 

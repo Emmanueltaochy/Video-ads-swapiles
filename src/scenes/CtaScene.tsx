@@ -6,6 +6,7 @@ import { TropicalBackground } from "../components/Background";
 import { Camera, Confetti, Sticker, TapHand } from "../components/Fx";
 import { AppStoreBadge, GooglePlayBadge, SocialIcon } from "../components/Badges";
 import { Logo } from "../components/Logo";
+import { useLayout } from "../layout";
 
 /** Bouton d'appel à l'action qui "respire". */
 export const CtaButton: React.FC<{ f: number; delay: number; fontSize?: number; tapAt?: number }> = ({ f, delay, fontSize = 54, tapAt }) => {
@@ -89,37 +90,50 @@ export const SocialRow: React.FC<{ f: number; delay: number; size?: number }> = 
 const L = (abs: number) => abs - T30.cta;
 export const CTA_TAP = 30;
 
+/** Positions selon le format (YouTube horizontal / Reels vertical, zones sûres respectées). */
+const CTA_LAYOUT = {
+  landscape: {
+    logoTop: 80, logo: 760, tagline: 44, button: 54, gap: 44, badge: 92, social: 56,
+    tap: { x: 1380, y: 520 }, gift: { x: 250, y: 560 }, pei: { x: 1680, y: 330 }, confetti: { x: 960, y: 200 },
+  },
+  vertical: {
+    logoTop: 300, logo: 820, tagline: 46, button: 38, gap: 50, badge: 92, social: 56,
+    tap: { x: 870, y: 745 }, gift: { x: 250, y: 1150 }, pei: { x: 830, y: 1150 }, confetti: { x: 540, y: 420 },
+  },
+};
+
 export const CtaScene: React.FC = () => {
   const f = useCurrentFrame();
   const logo = pop(f, 0, 9, 150);
   const tagline = ease(f, 8, 20);
   const groove = Math.round(GROOVE_START_30S * FPS) - T30.cta;
+  const Lay = useLayout().vertical ? CTA_LAYOUT.vertical : CTA_LAYOUT.landscape;
   return (
     <AbsoluteFill>
       <TropicalBackground variant="deep" />
       <Camera duration={T30.end - T30.cta} zoom={[1.06, 1]} punches={[0, CTA_TAP, L(CUES_30S.appStore), L(CUES_30S.googlePlay)]} pulse={groove}>
         <AbsoluteFill style={{ alignItems: "center", fontFamily: FONT }}>
-          <div style={{ marginTop: 80, transform: `scale(${logo}) rotate(${(1 - logo) * 12}deg)`, filter: "drop-shadow(0 18px 40px rgba(0,0,0,0.3))" }}>
-            <Logo width={760} color="#fff" />
+          <div style={{ marginTop: Lay.logoTop, transform: `scale(${logo}) rotate(${(1 - logo) * 12}deg)`, filter: "drop-shadow(0 18px 40px rgba(0,0,0,0.3))" }}>
+            <Logo width={Lay.logo} color="#fff" />
           </div>
-          <div style={{ marginTop: 6, fontWeight: 600, fontSize: 44, color: COLORS.lagoonLight, opacity: tagline, transform: `translateY(${(1 - tagline) * 20}px)` }}>
+          <div style={{ marginTop: 6, fontWeight: 600, fontSize: Lay.tagline, color: COLORS.lagoonLight, opacity: tagline, transform: `translateY(${(1 - tagline) * 20}px)` }}>
             {COPY.tagline}
           </div>
-          <div style={{ marginTop: 44 }}>
-            <CtaButton f={f} delay={L(CUES_30S.download)} tapAt={CTA_TAP} />
+          <div style={{ marginTop: Lay.gap }}>
+            <CtaButton f={f} delay={L(CUES_30S.download)} tapAt={CTA_TAP} fontSize={Lay.button} />
           </div>
-          <div style={{ marginTop: 44 }}>
-            <StoreBadges f={f} delay={L(CUES_30S.appStore)} delay2={L(CUES_30S.googlePlay)} />
+          <div style={{ marginTop: Lay.gap }}>
+            <StoreBadges f={f} delay={L(CUES_30S.appStore)} delay2={L(CUES_30S.googlePlay)} height={Lay.badge} />
           </div>
-          <div style={{ marginTop: 40 }}>
-            <SocialRow f={f} delay={L(CUES_30S.googlePlay) + 12} />
+          <div style={{ marginTop: Lay.gap - 4 }}>
+            <SocialRow f={f} delay={L(CUES_30S.googlePlay) + 12} size={Lay.social} />
           </div>
         </AbsoluteFill>
-        <TapHand x={1380} y={520} at={CTA_TAP} />
-        <Sticker x={250} y={560} at={L(CUES_30S.googlePlay) + 20} icon="gift" label="100 % gratuit" color={COLORS.coral} tilt={-8} />
-        <Sticker x={1680} y={330} at={L(CUES_30S.googlePlay) + 26} icon="palm" label="100 % péi" color={COLORS.lagoon} tilt={7} />
-        <Confetti at={2} x={960} y={200} count={80} seed="cta" />
-        <Confetti at={CTA_TAP + 2} x={1380} y={500} count={40} seed="tap" spread={0.6} />
+        <TapHand {...Lay.tap} at={CTA_TAP} />
+        <Sticker {...Lay.gift} at={L(CUES_30S.googlePlay) + 20} icon="gift" label="100 % gratuit" color={COLORS.coral} tilt={-8} />
+        <Sticker {...Lay.pei} at={L(CUES_30S.googlePlay) + 26} icon="palm" label="100 % péi" color={COLORS.lagoon} tilt={7} />
+        <Confetti at={2} {...Lay.confetti} count={80} seed="cta" />
+        <Confetti at={CTA_TAP + 2} x={Lay.tap.x} y={Lay.tap.y - 20} count={40} seed="tap" spread={0.6} />
       </Camera>
     </AbsoluteFill>
   );

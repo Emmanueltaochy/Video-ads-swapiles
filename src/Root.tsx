@@ -10,8 +10,14 @@ import { Bumper6s } from "./Bumper6s";
 import { FPS, HEIGHT, WIDTH } from "./config";
 
 export const RemotionRoot: React.FC = () => (
-  <Folder name="YouTube-Ads">
-    <Composition id="SwapilesAd30s" component={Ad30s} durationInFrames={30 * FPS} fps={FPS} width={WIDTH} height={HEIGHT} />
-    <Composition id="SwapilesBumper6s" component={Bumper6s} durationInFrames={6 * FPS} fps={FPS} width={WIDTH} height={HEIGHT} />
-  </Folder>
+  <>
+    <Folder name="YouTube-Ads">
+      <Composition id="SwapilesAd30s" component={Ad30s} durationInFrames={30 * FPS} fps={FPS} width={WIDTH} height={HEIGHT} />
+      <Composition id="SwapilesBumper6s" component={Bumper6s} durationInFrames={6 * FPS} fps={FPS} width={WIDTH} height={HEIGHT} />
+    </Folder>
+    <Folder name="Instagram-Reels">
+      {/* Même pub (voix, musique, timeline), mise en page verticale adaptée aux zones sûres Reels */}
+      <Composition id="SwapilesReel30s" component={Ad30s} durationInFrames={30 * FPS} fps={FPS} width={HEIGHT} height={WIDTH} />
+    </Folder>
+  </>
 );

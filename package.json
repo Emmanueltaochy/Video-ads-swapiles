@@ -8,10 +8,11 @@
     "studio": "remotion studio",
     "render:30s": "remotion render SwapilesAd30s out/swapiles-ad-30s.mp4",
     "render:bumper": "remotion render SwapilesBumper6s out/swapiles-bumper-6s.mp4",
-    "render:all": "npm run render:30s && npm run render:bumper",
+    "render:all": "npm run render:30s && npm run render:bumper && npm run render:reel",
     "lint": "tsc --noEmit",
     "audio:voice": "python3 scripts/generate_voiceover.py",
-    "audio:music": "python3 scripts/generate_music.py"
+    "audio:music": "python3 scripts/generate_music.py",
+    "render:reel": "remotion render SwapilesReel30s out/swapiles-reel-30s.mp4"
   },
   "dependencies": {
     "@fontsource/poppins": "^5.3.0",
