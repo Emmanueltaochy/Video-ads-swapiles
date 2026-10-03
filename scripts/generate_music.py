@@ -17,7 +17,7 @@ from scipy.io import wavfile
 from scipy.signal import butter, sosfilt
 
 SR = 44100
-BPM = 104
+BPM = 112  # doit rester égal à BPM dans src/config.ts
 STEP = 60 / BPM / 4  # durée d'une double-croche
 BAR = STEP * 16
 OUT = os.path.join(os.path.dirname(__file__), "..", "public", "audio")
@@ -173,14 +173,26 @@ MELODY = [
 TRESILLO = [0, 3, 6, 8, 11, 14]
 
 
-def groove_bar(buf, t0, bar_idx, full=True, melody=True):
+def hat(open_=False):
+    n = int((0.16 if open_ else 0.05) * SR)
+    return highpass(rng.standard_normal(n), 8000) * env(n, 0.001, 0.06 if open_ else 0.015) * 0.3
+
+
+def groove_bar(buf, t0, bar_idx, full=True, melody=True, tension=False):
     root, chord = CHORDS[bar_idx % 4]
     place(buf, pad(chord, BAR), t0, 1.0)
     for s in range(16):
         t = t0 + s * STEP
         place(buf, shaker(s % 2 == 1), t, 1.0, pan=0.35)
+        if tension:  # intro "problème" : kick sur chaque temps, ça avance
+            if s % 4 == 0:
+                place(buf, kick(), t, 0.75)
+            if s in (6, 14):
+                place(buf, rim(), t, 0.8, pan=-0.4)
         if not full:
             continue
+        if s in (2, 6, 10, 14):
+            place(buf, hat(open_=s == 14), t, 1.0, pan=-0.25)
         if s in (0, 7, 8):
             place(buf, kick(), t, 1.0 if s != 7 else 0.6)
         if s in (4, 12):
@@ -210,6 +222,13 @@ def final_hit(buf, t):
     place(buf, pad(chord, 2.2), t, 1.5)
 
 
+def impact(buf, t):
+    """Montée courte + cymbale + kick : ponctue un changement de scène."""
+    place(buf, riser(0.45), t - 0.45, 0.8)
+    place(buf, crash(), t, 0.7)
+    place(buf, kick(), t, 0.9)
+
+
 def master(buf, fade_out=0.6):
     buf = buf.copy()
     n = int(fade_out * SR)
@@ -223,14 +242,14 @@ def render_30s():
     dur = 30.0
     buf = np.zeros((int(dur * SR), 2))
     # 0 -> 3.3 s : intro "problème" (pad + marimba seuls, plus sobre)
-    drop = 3.3
+    drop = 3.6  # = T30.reveal
     intro_start = drop - 2 * BAR
     for b in range(2):
-        groove_bar(buf, intro_start + b * BAR, b + 2, full=False, melody=False)
+        groove_bar(buf, intro_start + b * BAR, b + 2, full=False, melody=False, tension=True)
     place(buf, riser(1.1), drop - 1.1, 1.0)
     place(buf, crash(), drop, 1.0)
     # 3.3 -> 29.2 s : groove complet
-    end_hit = 28.9
+    end_hit = 29.0
     b = 0
     t = drop
     while t + BAR <= end_hit + 0.01:
@@ -244,6 +263,9 @@ def render_30s():
         groove_bar(tmp, 0, b, full=True, melody=True)
         n = int(rest * SR)
         buf[int(t * SR) : int(t * SR) + n] += tmp[:n]
+    # changements de scène (doivent suivre T30 dans src/config.ts)
+    for t_imp in (5.97, 9.03, 13.97, 18.03, 21.7, 24.33):
+        impact(buf, t_imp)
     final_hit(buf, end_hit)
     # l'intro démarre avant 0 : on ne garde que [0, 30]
     return master(buf, fade_out=0.5)
@@ -254,10 +276,15 @@ def render_6s():
     buf = np.zeros((int(dur * SR), 2))
     place(buf, crash(), 0.0, 0.7)
     t = 0.0
-    for b in range(2):
-        groove_bar(buf, t, b, full=True, melody=True)
+    b = 0
+    while t < 5.2:
+        groove_bar(buf, t, b, full=True, melody=b > 0, tension=b == 0)
         t += BAR
-    final_hit(buf, 5.0)
+        b += 1
+    buf[int(5.2 * SR) :] *= 0.0  # coupe nette avant le coup final
+    for t_imp in (2.53, 4.6):  # doivent suivre T6 dans src/config.ts
+        impact(buf, t_imp)
+    final_hit(buf, 5.2)
     return master(buf, fade_out=0.25)
 
 

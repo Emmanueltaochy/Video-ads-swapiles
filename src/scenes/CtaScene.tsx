@@ -1,15 +1,17 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame } from "remotion";
-import { COLORS, COPY, FONT } from "../config";
+import { COLORS, COPY, CUES_30S, FONT, FPS, GROOVE_START_30S, T30 } from "../config";
 import { ease, pop } from "../components/anim";
 import { TropicalBackground } from "../components/Background";
+import { Camera, Confetti, Sticker, TapHand } from "../components/Fx";
 import { AppStoreBadge, GooglePlayBadge, SocialIcon } from "../components/Badges";
 import { Logo } from "../components/Logo";
 
 /** Bouton d'appel à l'action qui "respire". */
-export const CtaButton: React.FC<{ f: number; delay: number; fontSize?: number }> = ({ f, delay, fontSize = 54 }) => {
-  const s = pop(f, delay, 10);
-  const pulse = 1 + Math.max(0, Math.sin((f - delay - 15) / 7)) * 0.035;
+export const CtaButton: React.FC<{ f: number; delay: number; fontSize?: number; tapAt?: number }> = ({ f, delay, fontSize = 54, tapAt }) => {
+  const s = pop(f, delay, 9, 180);
+  const pressed = tapAt !== undefined && f >= tapAt && f < tapAt + 5 ? 0.92 : 1;
+  const pulse = (1 + Math.max(0, Math.sin((f - delay - 15) / 6)) * 0.045) * pressed;
   const shine = ((f - delay) * 28) % 1800;
   return (
     <div
@@ -51,12 +53,12 @@ export const CtaButton: React.FC<{ f: number; delay: number; fontSize?: number }
   );
 };
 
-export const StoreBadges: React.FC<{ f: number; delay: number; height?: number }> = ({ f, delay, height = 92 }) => (
+export const StoreBadges: React.FC<{ f: number; delay: number; delay2?: number; height?: number }> = ({ f, delay, delay2, height = 92 }) => (
   <div style={{ display: "flex", gap: 28 }}>
-    <div style={{ transform: `scale(${pop(f, delay)})` }}>
+    <div style={{ transform: `scale(${pop(f, delay, 8, 200)}) rotate(${(1 - pop(f, delay, 8, 200)) * -12}deg)` }}>
       <AppStoreBadge height={height} />
     </div>
-    <div style={{ transform: `scale(${pop(f, delay + 6)})` }}>
+    <div style={{ transform: `scale(${pop(f, delay2 ?? delay + 6, 8, 200)}) rotate(${(1 - pop(f, delay2 ?? delay + 6, 8, 200)) * 12}deg)` }}>
       <GooglePlayBadge height={height} />
     </div>
   </div>
@@ -84,39 +86,41 @@ export const SocialRow: React.FC<{ f: number; delay: number; size?: number }> = 
   </div>
 );
 
+const L = (abs: number) => abs - T30.cta;
+export const CTA_TAP = 30;
+
 export const CtaScene: React.FC = () => {
   const f = useCurrentFrame();
-  const logo = pop(f, 0, 11, 120);
-  const tagline = ease(f, 10, 24);
+  const logo = pop(f, 0, 9, 150);
+  const tagline = ease(f, 8, 20);
+  const groove = Math.round(GROOVE_START_30S * FPS) - T30.cta;
   return (
     <AbsoluteFill>
       <TropicalBackground variant="deep" />
-      <AbsoluteFill style={{ alignItems: "center", fontFamily: FONT }}>
-        <div style={{ marginTop: 80, transform: `scale(${logo})`, filter: "drop-shadow(0 18px 40px rgba(0,0,0,0.3))" }}>
-          <Logo width={760} color="#fff" />
-        </div>
-        <div
-          style={{
-            marginTop: 6,
-            fontWeight: 600,
-            fontSize: 44,
-            color: COLORS.lagoonLight,
-            opacity: tagline,
-            transform: `translateY(${(1 - tagline) * 20}px)`,
-          }}
-        >
-          {COPY.tagline}
-        </div>
-        <div style={{ marginTop: 44 }}>
-          <CtaButton f={f} delay={16} />
-        </div>
-        <div style={{ marginTop: 44 }}>
-          <StoreBadges f={f} delay={26} />
-        </div>
-        <div style={{ marginTop: 40 }}>
-          <SocialRow f={f} delay={36} />
-        </div>
-      </AbsoluteFill>
+      <Camera duration={T30.end - T30.cta} zoom={[1.06, 1]} punches={[0, CTA_TAP, L(CUES_30S.appStore), L(CUES_30S.googlePlay)]} pulse={groove}>
+        <AbsoluteFill style={{ alignItems: "center", fontFamily: FONT }}>
+          <div style={{ marginTop: 80, transform: `scale(${logo}) rotate(${(1 - logo) * 12}deg)`, filter: "drop-shadow(0 18px 40px rgba(0,0,0,0.3))" }}>
+            <Logo width={760} color="#fff" />
+          </div>
+          <div style={{ marginTop: 6, fontWeight: 600, fontSize: 44, color: COLORS.lagoonLight, opacity: tagline, transform: `translateY(${(1 - tagline) * 20}px)` }}>
+            {COPY.tagline}
+          </div>
+          <div style={{ marginTop: 44 }}>
+            <CtaButton f={f} delay={L(CUES_30S.download)} tapAt={CTA_TAP} />
+          </div>
+          <div style={{ marginTop: 44 }}>
+            <StoreBadges f={f} delay={L(CUES_30S.appStore)} delay2={L(CUES_30S.googlePlay)} />
+          </div>
+          <div style={{ marginTop: 40 }}>
+            <SocialRow f={f} delay={L(CUES_30S.googlePlay) + 12} />
+          </div>
+        </AbsoluteFill>
+        <TapHand x={1380} y={520} at={CTA_TAP} />
+        <Sticker x={250} y={560} at={L(CUES_30S.googlePlay) + 20} icon="gift" label="100 % gratuit" color={COLORS.coral} tilt={-8} />
+        <Sticker x={1680} y={330} at={L(CUES_30S.googlePlay) + 26} icon="palm" label="100 % péi" color={COLORS.lagoon} tilt={7} />
+        <Confetti at={2} x={960} y={200} count={80} seed="cta" />
+        <Confetti at={CTA_TAP + 2} x={1380} y={500} count={40} seed="tap" spread={0.6} />
+      </Camera>
     </AbsoluteFill>
   );
 };

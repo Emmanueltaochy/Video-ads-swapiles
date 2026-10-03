@@ -15,17 +15,20 @@ npm run dev            # Remotion Studio (prévisualisation) -> http://localhost
 npm run render:all     # exporte out/swapiles-ad-30s.mp4 et out/swapiles-bumper-6s.mp4
 ```
 
-## Storyboard (30 s)
+## Storyboard (30 s) — V2 dynamique
+
+La timeline est **calée sur la voix off** (repères au mot près dans `src/config.ts` → `T30` / `CUES_30S`) : jamais plus de 0,2 s de blanc entre deux phrases, et chaque élément apparaît sur le mot prononcé.
 
 | Temps | Scène | Voix off |
 |---|---|---|
-| 0–3,3 s | Problème : colis métropole → Réunion, compteurs frais de port / délai, tampon « Trop cher. Trop long. » | « Commander en métropole ? Frais de port, délais… galère ! » |
-| 3,3–5 s | Vague → logo Swap'Îles + « Tout est déjà sur l'île ! » | « Avec Swap'Îles, tout est déjà sur l'île ! » |
-| 5–10 s | ① Photographie : appareil photo dans le téléphone, flash, « Annonce en ligne ! » | « Un : prends ton article en photo. » |
-| 10–15 s | ② Vends / échange / donne : fiche annonce, notification, écran paiement + pastilles CB · Espèces · Échange · Don | « Deux : vends-le, échange-le, ou donne-le… » |
-| 15–20 s | ③ Rencontre l'acheteur : écran remise/livraison + carte des points relais | « Trois : remets-le en main propre, ou en point relais… » |
-| 20–25 s | Bénéfices : gagner de l'argent (+125 €), consommer local, écologique + « +2 000 annonces · +1 000 utilisateurs » | « Gagne de l'argent, consomme local… » |
-| 25–30 s | Logo + « Télécharge Swap'Îles gratuitement » + App Store / Google Play + Facebook · Instagram · TikTok + swapiles.com | « Télécharge Swap'Îles gratuitement… » |
+| 0–3,6 s | Problème : colis métropole → Réunion, compteurs frais de port / délai, tampon « Trop cher. Trop long. » (secousse caméra) | « Commander en métropole ? Des frais de port, des délais… la galère ! » |
+| 3,6–6 s | Vague → logo Swap'Îles + confettis + « Tout est déjà sur l'île ! » | « Avec Swap'Îles, tout est déjà sur l'île ! » |
+| 6–9 s | ① Photo : déclencheur, flash, « Annonce en ligne ! » + confettis, stickers favoris / vues | « Un : prends ton article en photo… et hop, il est en ligne ! » |
+| 9–14 s | ② Notification, écran paiement, pastilles Échange · Don · CB · Espèces sur chaque mot | « Deux : vends-le, échange-le, ou donne-le ! Paiement par carte, ou en espèces. » |
+| 14–18 s | ③ Écran remise, carte des points relais, tampon « VENDU ! » + « +25 € » | « Trois : remets-le en main propre, ou en point relais… » |
+| 18–21,7 s | Cartes bénéfices (gagner de l'argent +125 €, consommer local, écologique) | « Gagne de l'argent, consomme local… » |
+| 21,7–24,3 s | Grands compteurs « +2 000 annonces » / « +1 000 utilisateurs » + confettis | « Déjà plus de deux mille annonces, et mille utilisateurs ! » |
+| 24,3–30 s | Logo + bouton « Télécharge Swap'Îles gratuitement » (tapé par une main) + App Store / Google Play + réseaux + swapiles.com | « Télécharge Swap'Îles gratuitement, sur l'App Store et Google Play ! » |
 
 Le bas de l'écran (210 px, `SAFE_BOTTOM`) reste libre pour les boutons YouTube.
 
@@ -40,7 +43,8 @@ Le bas de l'écran (210 px, `SAFE_BOTTOM`) reste libre pour les boutons YouTube.
 
 - **Musique** : composée et synthétisée par code (`scripts/generate_music.py`, numpy) → aucune bibliothèque externe, 100 % libre de droits. Pour une autre ambiance, remplace `public/audio/music-30s.wav` / `music-6s.wav`.
 - **Bruitages** : générés par le même script (`public/audio/sfx/`).
-- **Voix off** : synthèse vocale (`scripts/generate_voiceover.py`, voix `fr-FR-VivienneMultilingualNeural` via edge-tts), normalisée à −16 LUFS. La musique baisse automatiquement sous la voix (ducking).
+- **Voix off** : synthèse vocale (`scripts/generate_voiceover.py`, voix `fr-FR-VivienneMultilingualNeural` via edge-tts), normalisée à −16 LUFS. Tout le texte est synthétisé **en un seul passage** (sinon la voix multilingue peut prendre un accent étranger sur une phrase courte), puis découpé phrase par phrase ; `public/audio/voice/timings.json` donne l'horodatage de chaque mot. La musique baisse automatiquement sous la voix (ducking).
+  Si tu régénères la voix, réécoute-la (la synthèse varie légèrement) puis reporte les nouveaux temps dans `src/config.ts`.
   ⚠️ C'est une **voix de maquette** : pour la diffusion payante, remplace les fichiers `public/audio/voice/*.mp3` par une voix off professionnelle ou un service TTS sous licence commerciale (mêmes noms de fichiers ; ajuste `start`/`duration` dans `src/config.ts` si besoin).
 
 ```bash
