@@ -1,4 +1,4 @@
-"""Génère la voix off (TTS) des deux pubs.
+"""Génère la voix off (TTS) des pubs.
 
 Chaque pub est synthétisée EN UNE SEULE FOIS (texte complet) : la voix
 multilingue détecte ainsi correctement le français dès la première phrase
@@ -7,9 +7,11 @@ Le fichier est ensuite découpé phrase par phrase grâce aux horodatages des
 mots, puis chaque segment est normalisé et placé dans la timeline Remotion
 (voir src/config.ts -> VOICE_30S / VOICE_6S).
 
-Sorties : public/audio/voice/<id>.mp3 + public/audio/voice/timings.json
+Sorties : public/audio/voice/<id>.mp3 + un fichier de timings par groupe
 
-Usage : python3 scripts/generate_voiceover.py
+Usage :
+  python3 scripts/generate_voiceover.py           # pubs YouTube / Reels (timings.json)
+  python3 scripts/generate_voiceover.py parents   # Reel « parents » (timings-parents.json)
 Dépendances : pip install edge-tts ; ffmpeg
 """
 import asyncio
@@ -17,6 +19,7 @@ import json
 import os
 import re
 import subprocess
+import sys
 import unicodedata
 
 try:  # Derrière un proxy TLS, utilise le bundle CA de l'environnement s'il existe
@@ -49,6 +52,22 @@ SCRIPTS = {
         ("bump-01", "Des frais de port ? Des délais ? Oublie ça !"),
         ("bump-02", "Achète, vends et donne à La Réunion, avec Swap-îles !"),
     ],
+    # Reel vertical à destination des parents (vie chère + articles enfant/bébé)
+    "parents": [
+        ("par-01", "À La Réunion, la vie est chère… et nos marmailles grandissent si vite !"),
+        ("par-02", "Une poussette, des habits, des chaussures… il faut tout racheter, tout le temps !"),
+        ("par-03", "Pourtant, ton enfant ne doit manquer de rien."),
+        ("par-04", "Sur Swap-îles, des parents d'ici revendent à petit prix les affaires d'enfant et de bébé qui ne servent plus."),
+        ("par-05", "Poussette, bodies, jouets, vélo… presque neufs, et à prix péi !"),
+        ("par-06", "Et ce qui est devenu trop petit ? Vends-le à ton tour !"),
+        ("par-07", "Télécharge Swap-îles gratuitement. Entre parents, on s'entraide !"),
+    ],
+}
+
+# Groupes synthétisés ensemble (un passage TTS par groupe) et fichier de timings associé
+GROUPS = {
+    "pubs": (["ad30", "bump"], "timings.json"),
+    "parents": (["parents"], "timings-parents.json"),
 }
 
 
@@ -94,12 +113,13 @@ def split_segments(segments, words):
     return spans
 
 
-async def main():
+async def main(group):
     os.makedirs(OUT_DIR, exist_ok=True)
     timings = {}
-    # Tout est synthétisé en un seul passage : plus il y a de texte français,
-    # plus la détection de langue de la voix multilingue est fiable.
-    for name, segments in {"all": [WARMUP] + SCRIPTS["ad30"] + SCRIPTS["bump"]}.items():
+    names, timings_file = GROUPS[group]
+    # Tout le groupe est synthétisé en un seul passage : plus il y a de texte
+    # français, plus la détection de langue de la voix multilingue est fiable.
+    for name, segments in {group: [WARMUP] + [seg for n in names for seg in SCRIPTS[n]]}.items():
         full_text = " ".join(t for _, t in segments)
         full_mp3 = os.path.join(OUT_DIR, f"_{name}-full.mp3")
         words = await synth(full_text, full_mp3)
@@ -136,9 +156,9 @@ async def main():
             }
             print(f"ok {seg_id} {dur:.2f}s")
         os.remove(full_mp3)
-    with open(os.path.join(OUT_DIR, "timings.json"), "w") as f:
+    with open(os.path.join(OUT_DIR, timings_file), "w") as f:
         json.dump(timings, f, indent=2)
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(main(sys.argv[1] if len(sys.argv) > 1 else "pubs"))

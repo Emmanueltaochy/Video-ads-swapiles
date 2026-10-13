@@ -4,7 +4,7 @@ Tout est généré par code (synthèse additive avec numpy) : aucune
 bibliothèque sonore externe, donc 100 % libre de droits.
 
 Sorties (public/audio/) :
-  music-30s.wav, music-6s.wav            -> musique tropicale (steel pan, marimba, groove afro)
+  music-30s.wav, music-6s.wav, music-parents.wav -> musique tropicale (steel pan, marimba, groove afro)
   sfx/whoosh.wav, sfx/thud.wav, sfx/pop.wav, sfx/shutter.wav, sfx/ding.wav, sfx/notif.wav
 
 Usage : python3 scripts/generate_music.py
@@ -288,6 +288,35 @@ def render_6s():
     return master(buf, fade_out=0.25)
 
 
+def section(buf, t0, t1, bar0=0, **mode):
+    """Joue le groove de t0 à t1 (coupé net à t1), à partir de la mesure bar0."""
+    tmp = np.zeros((int((t1 - t0 + BAR) * SR) + 10, 2))
+    t, b = 0.0, bar0
+    while t < t1 - t0:
+        groove_bar(tmp, t, b, **mode)
+        t += BAR
+        b += 1
+    n = int((t1 - t0) * SR)
+    i = int(t0 * SR)
+    buf[i : i + n] += tmp[:n]
+
+
+def render_parents():
+    """Reel « parents » (26 s) : doit suivre TP dans src/parents/config.ts."""
+    dur = 26.0
+    buf = np.zeros((int(dur * SR), 2))
+    section(buf, 0.0, 3.4, bar0=2, full=False, melody=False, tension=True)  # vie chère
+    section(buf, 3.4, 7.25, bar0=0, full=True, melody=False)  # tout racheter
+    section(buf, 7.25, 9.4, bar0=1, full=False, melody=True)  # émotion : ton enfant
+    place(buf, riser(0.9), 9.4 - 0.9, 1.0)
+    place(buf, crash(), 9.4, 1.0)
+    section(buf, 9.4, 25.0, bar0=0, full=True, melody=True)  # Swap'Îles -> fin
+    for t_imp in (3.4, 13.7, 18.0, 20.6):
+        impact(buf, t_imp)
+    final_hit(buf, 25.0)
+    return master(buf, fade_out=0.4)
+
+
 # ---------------------------------------------------------------- bruitages
 def sfx():
     out = {}
@@ -350,5 +379,6 @@ def write(path, data):
 if __name__ == "__main__":
     write(os.path.join(OUT, "music-30s.wav"), render_30s())
     write(os.path.join(OUT, "music-6s.wav"), render_6s())
+    write(os.path.join(OUT, "music-parents.wav"), render_parents())
     for name, sig in sfx().items():
         write(os.path.join(OUT, "sfx", f"{name}.wav"), sig.astype(np.float32))

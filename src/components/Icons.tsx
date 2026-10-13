@@ -24,7 +24,16 @@ type IconName =
   | "euro"
   | "palm"
   | "users"
-  | "tag";
+  | "tag"
+  | "stroller"
+  | "onesie"
+  | "teddy"
+  | "shoe"
+  | "bike"
+  | "bottle"
+  | "cart"
+  | "refresh"
+  | "ruler";
 
 const PATHS: Record<IconName, React.ReactNode> = {
   camera: (
@@ -152,6 +161,68 @@ const PATHS: Record<IconName, React.ReactNode> = {
     <>
       <path d="M3.5 12.5V4.5a1 1 0 0 1 1-1h8l8 8-9 9z" />
       <circle cx="8.5" cy="8.5" r="1.6" />
+    </>
+  ),
+  stroller: (
+    <>
+      <path d="M4 11a7 7 0 0 1 7-7v7" />
+      <path d="M3.5 11h13c0 3-2.7 5.5-6.5 5.5S3.5 14 3.5 11z" />
+      <path d="M16.5 11 18 6h2.5" />
+      <circle cx="7" cy="19.5" r="1.8" />
+      <circle cx="14" cy="19.5" r="1.8" />
+    </>
+  ),
+  onesie: (
+    <>
+      <path d="M8.5 3.5 4 6l1.8 3.6L7.5 9v5.5c0 3 2 5.5 4.5 5.5s4.5-2.5 4.5-5.5V9l1.7.6L20 6l-4.5-2.5c-.6 1.5-1.9 2.4-3.5 2.4s-2.9-.9-3.5-2.4z" />
+      <path d="M10.5 17.5h3" />
+    </>
+  ),
+  teddy: (
+    <>
+      <circle cx="7.5" cy="5.5" r="2" />
+      <circle cx="16.5" cy="5.5" r="2" />
+      <circle cx="12" cy="9" r="4.2" />
+      <ellipse cx="12" cy="17.3" rx="5" ry="4.2" />
+      <path d="M10.6 9.5h.01M13.4 9.5h.01M11.2 11.2c.5.4 1.1.4 1.6 0" />
+    </>
+  ),
+  shoe: (
+    <>
+      <path d="M3 17.5V9.5l4.5-1 3 3.5h4l5 1.8a2.2 2.2 0 0 1 1.5 2.1v1.6z" />
+      <path d="M3 17.5v1.5h18v-1.5M8.5 12.5l1-1M10.5 14l1-1" />
+    </>
+  ),
+  bike: (
+    <>
+      <circle cx="5.5" cy="16" r="3.5" />
+      <circle cx="18.5" cy="16" r="3.5" />
+      <path d="M5.5 16 9 9h6.5l3 7M9 9l3.5 7h-7M14.5 5.5h2.5l1.5 3.5M8 6.5h3" />
+    </>
+  ),
+  bottle: (
+    <>
+      <path d="M8.5 9h7v10a2.5 2.5 0 0 1-2.5 2.5h-2A2.5 2.5 0 0 1 8.5 19z" />
+      <path d="M10 9V6.5a2 2 0 0 1 4 0V9M8 9h8M8.5 13h3M8.5 16h3" />
+    </>
+  ),
+  cart: (
+    <>
+      <path d="M2.5 3.5h2.5l2.4 11.2a1.5 1.5 0 0 0 1.5 1.2h8.6a1.5 1.5 0 0 0 1.5-1.1L21 7.5H5.8" />
+      <circle cx="9.5" cy="20" r="1.5" />
+      <circle cx="17" cy="20" r="1.5" />
+    </>
+  ),
+  refresh: (
+    <>
+      <path d="M20 11a8 8 0 0 0-14.5-4.5M4 13a8 8 0 0 0 14.5 4.5" />
+      <path d="M5 3v4h4M19 21v-4h-4" />
+    </>
+  ),
+  ruler: (
+    <>
+      <rect x="8" y="2.5" width="8" height="19" rx="1.5" />
+      <path d="M8 6.5h3M8 10h4.5M8 13.5h3M8 17h4.5" />
     </>
   ),
 };

@@ -7,6 +7,7 @@ Deux publicités YouTube pour **Swap'Îles**, la seconde main des îles (version
 | `SwapilesAd30s` | 1920×1080, 30 fps | 30 s | In-stream désactivable après 5 s |
 | `SwapilesBumper6s` | 1920×1080, 30 fps | 6 s | Bumper non désactivable |
 | `SwapilesReel30s` | 1080×1920, 30 fps | 30 s | Instagram Reels (même voix, musique et timeline, mise en page verticale) |
+| `SwapilesReelParents` | 1080×1920, 30 fps | 26 s | Reel « Parents » : vie chère à La Réunion + articles enfant / bébé à petit prix |
 
 ## Démarrer
 
@@ -37,6 +38,22 @@ Le bas de l'écran (210 px, `SAFE_BOTTOM`) reste libre pour les boutons YouTube.
 
 Les scènes détectent le format (`src/layout.ts` → `useLayout()`) et basculent sur une mise en page verticale : textes en haut, téléphone au centre, pastilles de paiement de part et d'autre, cartes bénéfices empilées. Tout le texte reste dans la **zone sûre Reels** (`REEL_SAFE` : y 250 → 1300, hors colonne d'icônes à droite), car l'interface Instagram recouvre le haut (compte), le bas (légende, bouton d'action) et la droite (j'aime, commentaires).
 
+## Reel « Parents » (26 s)
+
+Code dans `src/parents/` (textes, prix d'exemple et timeline dans `src/parents/config.ts`, décor « péi » avec montagnes, lagon et drapeau dans `Reunion.tsx`).
+
+| Temps | Scène | Voix off |
+|---|---|---|
+| 0–3,4 s | Coucher de soleil sur les montagnes, « À La Réunion, la vie est chère… », étiquettes de prix qui tombent, body → chaussure → vélo qui grandissent | « À La Réunion, la vie est chère… et nos marmailles grandissent si vite ! » |
+| 3,4–7,3 s | Toise (les âges défilent) + ticket de caisse « neuf » qui s'allonge, total 542 € | « Une poussette, des habits, des chaussures… il faut tout racheter, tout le temps ! » |
+| 7,3–9,4 s | Cœur avec doudou, « Ton enfant ne doit manquer de rien. » (musique plus douce) | « Pourtant, ton enfant ne doit manquer de rien. » |
+| 9,4–13,7 s | Logo + téléphone sur la catégorie Enfant (annonces de 3 € à 90 €) | « Sur Swap'Îles, des parents d'ici revendent à petit prix… » |
+| 13,7–18 s | Comparatif neuf / Swap'Îles, 464 € économisés, tampon « Prix péi ! » | « Poussette, bodies, jouets, vélo… presque neufs, et à prix péi ! » |
+| 18–20,6 s | Body « trop petit » → photo → VENDU 8 € | « Et ce qui est devenu trop petit ? Vends-le à ton tour ! » |
+| 20,6–26 s | Logo, « Entre parents, on s'entraide », bouton, stores, réseaux, badge 974 | « Télécharge Swap'Îles gratuitement. Entre parents, on s'entraide ! » |
+
+Les prix sont des **exemples** (mention « Exemples de prix » à l'écran) : adapte-les dans `src/parents/config.ts`.
+
 ## Modifier la pub
 
 - **Textes, chiffres, couleurs, timings voix** : `src/config.ts`
@@ -53,7 +70,7 @@ Les scènes détectent le format (`src/layout.ts` → `useLayout()`) et basculen
   ⚠️ C'est une **voix de maquette** : pour la diffusion payante, remplace les fichiers `public/audio/voice/*.mp3` par une voix off professionnelle ou un service TTS sous licence commerciale (mêmes noms de fichiers ; ajuste `start`/`duration` dans `src/config.ts` si besoin).
 
 ```bash
-pip install numpy scipy edge-tts
+pip install -U numpy scipy edge-tts   # -U : edge-tts doit être à jour (sinon erreur 403)
 npm run audio:music
 npm run audio:voice
 ```

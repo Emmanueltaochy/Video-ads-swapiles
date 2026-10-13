@@ -8,6 +8,8 @@ import { Composition, Folder } from "remotion";
 import { Ad30s } from "./Ad30s";
 import { Bumper6s } from "./Bumper6s";
 import { FPS, HEIGHT, WIDTH } from "./config";
+import { ParentsReel } from "./parents/ParentsReel";
+import { PARENTS_DURATION } from "./parents/config";
 
 export const RemotionRoot: React.FC = () => (
   <>
@@ -18,6 +20,8 @@ export const RemotionRoot: React.FC = () => (
     <Folder name="Instagram-Reels">
       {/* Même pub (voix, musique, timeline), mise en page verticale adaptée aux zones sûres Reels */}
       <Composition id="SwapilesReel30s" component={Ad30s} durationInFrames={30 * FPS} fps={FPS} width={HEIGHT} height={WIDTH} />
+      {/* Reel dédié aux parents : vie chère + articles enfant / bébé */}
+      <Composition id="SwapilesReelParents" component={ParentsReel} durationInFrames={PARENTS_DURATION} fps={FPS} width={HEIGHT} height={WIDTH} />
     </Folder>
   </>
 );

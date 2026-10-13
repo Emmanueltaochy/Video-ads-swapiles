@@ -37,7 +37,7 @@ const frondPath = (length: number, bend: number, count: number, leafLen: number)
   return d;
 };
 
-const Frond: React.FC<{
+export const Frond: React.FC<{
   x: number;
   y: number;
   rotate: number;
