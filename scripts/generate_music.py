@@ -379,6 +379,7 @@ def write(path, data):
 if __name__ == "__main__":
     write(os.path.join(OUT, "music-30s.wav"), render_30s())
     write(os.path.join(OUT, "music-6s.wav"), render_6s())
-    write(os.path.join(OUT, "music-parents.wav"), render_parents())
     for name, sig in sfx().items():
         write(os.path.join(OUT, "sfx", f"{name}.wav"), sig.astype(np.float32))
+    # en dernier : le générateur aléatoire est partagé, les pistes précédentes restent ainsi identiques
+    write(os.path.join(OUT, "music-parents.wav"), render_parents())
