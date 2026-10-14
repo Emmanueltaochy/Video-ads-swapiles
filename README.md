@@ -44,7 +44,7 @@ Code dans `src/parents/` (textes, prix d'exemple et timeline dans `src/parents/c
 
 | Temps | Scène | Voix off |
 |---|---|---|
-| 0–3,4 s | Coucher de soleil sur les montagnes, « À La Réunion, la vie est chère… », étiquettes de prix qui tombent, body → chaussure → vélo qui grandissent | « À La Réunion, la vie est chère… et nos marmailles grandissent si vite ! » |
+| 0–3,4 s | Coucher de soleil sur les montagnes, drapeau de La Réunion qui flotte sur « À La Réunion », puis « la vie est chère… », étiquettes de prix qui tombent, body → chaussure → vélo qui grandissent | « À La Réunion, la vie est chère… et nos marmailles grandissent si vite ! » |
 | 3,4–7,3 s | Toise (les âges défilent) + ticket de caisse « neuf » qui s'allonge, total 542 € | « Une poussette, des habits, des chaussures… il faut tout racheter, tout le temps ! » |
 | 7,3–9,4 s | Cœur avec doudou, « Ton enfant ne doit manquer de rien. » (musique plus douce) | « Pourtant, ton enfant ne doit manquer de rien. » |
 | 9,4–13,7 s | Logo + téléphone sur la catégorie Enfant (annonces de 3 € à 90 €) | « Sur Swap'Îles, des parents d'ici revendent à petit prix… » |

@@ -103,8 +103,8 @@ export const ReunionBackground: React.FC<{ variant?: Variant; sun?: boolean }> =
 };
 
 /** Drapeau « Lo Mahavéli » stylisé (drapeau populaire de La Réunion). */
-export const ReunionFlag: React.FC<{ size?: number }> = ({ size = 40 }) => (
-  <svg width={size * 1.5} height={size} viewBox="0 0 60 40" style={{ borderRadius: size * 0.12, display: "block" }}>
+export const ReunionFlag: React.FC<{ size?: number; square?: boolean }> = ({ size = 40, square }) => (
+  <svg width={size * 1.5} height={size} viewBox="0 0 60 40" style={{ borderRadius: square ? 0 : size * 0.12, display: "block" }}>
     <rect width={60} height={40} fill="#1d5fb4" />
     {[-60, -30, 0, 30, 60].map((a) => (
       <path key={a} d="M30 26 L27.2 -10 L32.8 -10 Z" fill="#ffd400" transform={`rotate(${a} 30 26)`} />
@@ -112,6 +112,39 @@ export const ReunionFlag: React.FC<{ size?: number }> = ({ size = 40 }) => (
     <path d="M30 26 L12 40 L48 40 Z" fill="#e3242b" />
   </svg>
 );
+
+/**
+ * Grand drapeau qui flotte au vent : le drapeau est découpé en bandes
+ * verticales décalées par une onde (plus forte loin du mât) et ombrées.
+ */
+export const WavingFlag: React.FC<{ width?: number }> = ({ width = 360 }) => {
+  const f = useCurrentFrame();
+  const h = (width * 2) / 3;
+  const strips = 60;
+  const sw = width / strips;
+  const amp = width * 0.035;
+  return (
+    <div style={{ position: "relative", width: width + 24, height: h + amp * 2 + 60 }}>
+      {/* mât */}
+      <div style={{ position: "absolute", left: 0, top: 0, width: 12, height: h + amp * 2 + 60, borderRadius: 6, background: "linear-gradient(90deg, #d9dde0, #8b9196)" }} />
+      <div style={{ position: "absolute", left: -4, top: -10, width: 20, height: 20, borderRadius: "50%", background: "#ffd400" }} />
+      {new Array(strips).fill(0).map((_, i) => {
+        const k = i / strips;
+        const phase = i * 0.42 - f * 0.32;
+        const dy = Math.sin(phase) * amp * (0.25 + k);
+        const shade = Math.cos(phase) * 0.18 * (0.3 + k);
+        return (
+          <div key={i} style={{ position: "absolute", left: 12 + i * sw, top: amp + dy, width: sw + 0.6, height: h, overflow: "hidden" }}>
+            <div style={{ position: "absolute", left: -i * sw, top: 0 }}>
+              <ReunionFlag size={h} square />
+            </div>
+            <div style={{ position: "absolute", inset: 0, background: shade > 0 ? `rgba(255,255,255,${shade})` : `rgba(0,0,0,${-shade})` }} />
+          </div>
+        );
+      })}
+    </div>
+  );
+};
 
 /** Pastille « 974 » avec drapeau. */
 export const Badge974: React.FC<{ scale?: number }> = ({ scale = 1 }) => (

@@ -5,7 +5,7 @@ import { clamp, out, pop } from "../components/anim";
 import { beatPulse, Camera, KineticText, Sticker } from "../components/Fx";
 import { Icon, IconName } from "../components/Icons";
 import { CP, PARENTS_COPY as COPY, RECEIPT, TP } from "./config";
-import { Badge974, ReunionBackground } from "./Reunion";
+import { Badge974, ReunionBackground, WavingFlag } from "./Reunion";
 
 const euro = (n: number) => `${n.toFixed(2).replace(".", ",")} €`;
 
@@ -69,6 +69,20 @@ export const HookP: React.FC = () => {
     <AbsoluteFill>
       <ReunionBackground variant="sunset" />
       <Camera duration={TP.cost} zoom={[1.16, 1]} punches={[CP.reunion, CP.expensive, CP.kids]} shakeAt={[CP.expensive]}>
+        {/* « À La Réunion » : le drapeau apparaît et flotte, puis file (derrière le texte) se ranger dans le badge */}
+        {f < CP.expensive + 6 && (
+          <div
+            style={{
+              position: "absolute",
+              left: 540,
+              top: interpolate(f, [CP.expensive - 6, CP.expensive + 6], [790, 280], { ...clamp, easing: (v) => v * v }),
+              transform: `translate(-50%, -50%) scale(${pop(f, CP.reunion - 6, 9, 170) * interpolate(f, [CP.expensive - 6, CP.expensive + 6], [1, 0.12], clamp)}) rotate(${(1 - pop(f, CP.reunion - 6, 9, 170)) * -25}deg)`,
+              filter: "drop-shadow(0 20px 30px rgba(0,0,0,0.35))",
+            }}
+          >
+            <WavingFlag width={420} />
+          </div>
+        )}
         <AbsoluteFill style={{ alignItems: "center" }}>
           <div style={{ marginTop: 262, transform: `scale(${pop(f, CP.reunion - 4)})` }}>
             <Badge974 />
