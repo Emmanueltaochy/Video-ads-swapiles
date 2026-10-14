@@ -6,71 +6,28 @@ import { Chip } from "../components/Badges";
 import { Camera, Confetti, KineticText, Sticker, TapHand } from "../components/Fx";
 import { Icon } from "../components/Icons";
 import { Logo } from "../components/Logo";
-import { Phone } from "../components/Phone";
+import { Phone, Screenshot } from "../components/Phone";
 import { CtaButton, SocialRow, StoreBadges } from "../scenes/CtaScene";
-import { COMPARE, CP, KID_CATEGORIES, LISTINGS, PARENTS_COPY as COPY, TP } from "./config";
+import { COMPARE, CP, PARENTS_COPY as COPY, TP } from "./config";
 import { Badge974, ReunionBackground, ReunionFlag } from "./Reunion";
 
 /* ================================================================== 4. LA SOLUTION */
 
-/** Écran « Enfant » de l'app (redessiné, catégories réelles du site). */
-const KidsScreen: React.FC<{ f: number; L: (n: number) => number }> = ({ f, L }) => (
-  <AbsoluteFill style={{ background: "#f6f8f7", fontFamily: FONT }}>
-    <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 16px", background: "#fff", borderBottom: "1px solid #e8ecea" }}>
-      <Logo width={110} />
-      <div style={{ flex: 1, height: 34, borderRadius: 17, background: "#eef2f1", color: "#93a09c", fontSize: 14, display: "flex", alignItems: "center", paddingLeft: 14 }}>
-        Rechercher…
-      </div>
-    </div>
-    <div style={{ padding: "12px 16px 6px", fontWeight: 800, fontSize: 24, color: COLORS.ink, display: "flex", alignItems: "center", gap: 8 }}>
-      <Icon name="teddy" size={26} color={COLORS.primary} strokeWidth={2.2} /> Enfant
-    </div>
-    <div style={{ display: "flex", gap: 8, padding: "0 16px 10px", overflow: "hidden", whiteSpace: "nowrap" }}>
-      {KID_CATEGORIES.map((c, i) => (
-        <span
-          key={c}
-          style={{
-            padding: "7px 12px",
-            borderRadius: 16,
-            fontSize: 13,
-            fontWeight: 700,
-            background: i === 1 ? COLORS.primary : "#fff",
-            color: i === 1 ? "#fff" : COLORS.primary,
-            border: `1.5px solid ${COLORS.primary}`,
-            flexShrink: 0,
-          }}
-        >
-          {c}
-        </span>
-      ))}
-    </div>
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr",
-        gap: 10,
-        padding: "0 14px",
-        // l'écran défile doucement une fois toutes les annonces affichées
-        transform: `translateY(${interpolate(f, [L(CP.unused), L(TP.compare) + 10], [0, -46], clamp)}px)`,
-      }}
-    >
-      {LISTINGS.map((it) => {
-        const s = pop(f, L(it.at), 9, 220);
-        return (
-          <div key={it.label} style={{ background: "#fff", borderRadius: 14, overflow: "hidden", boxShadow: "0 3px 8px rgba(0,0,0,0.08)", transform: `scale(${s})`, opacity: Math.min(1, s * 2) }}>
-            <div style={{ height: 96, background: it.color, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Icon name={it.icon} size={62} color={COLORS.primary} strokeWidth={1.8} />
-            </div>
-            <div style={{ padding: "6px 10px 8px" }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: "#3d4a46", whiteSpace: "nowrap", overflow: "hidden" }}>{it.label}</div>
-              <div style={{ fontSize: 20, fontWeight: 900, color: COLORS.primary }}>{it.price} €</div>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  </AbsoluteFill>
-);
+/** Vraies captures de l'app (filtre Enfant, noms des vendeurs masqués) qui défilent. */
+const KidsScreens: React.FC<{ f: number; L: (n: number) => number }> = ({ f, L }) => {
+  const switchAt = L(CP.baby) - 4;
+  const p = interpolate(f, [switchAt, switchAt + 10], [0, 1], { ...clamp, easing: (v) => 1 - (1 - v) ** 3 });
+  return (
+    <AbsoluteFill style={{ background: "#f9fafb" }}>
+      <AbsoluteFill style={{ transform: `translateX(${-p * 100}%)` }}>
+        <Screenshot src="screens/enfant-1.png" scrollY={interpolate(f, [L(CP.cheap), switchAt], [0, 26], clamp)} />
+      </AbsoluteFill>
+      <AbsoluteFill style={{ transform: `translateX(${(1 - p) * 100}%)` }}>
+        <Screenshot src="screens/enfant-2.png" scrollY={interpolate(f, [switchAt, L(TP.compare)], [0, 20], clamp)} />
+      </AbsoluteFill>
+    </AbsoluteFill>
+  );
+};
 
 export const SolutionP: React.FC = () => {
   const f = useCurrentFrame();
@@ -93,11 +50,11 @@ export const SolutionP: React.FC = () => {
             style={{ marginTop: 20, fontWeight: 800, fontSize: 58, lineHeight: 1.1, color: "#fff", textAlign: "center", letterSpacing: -1, textShadow: "0 6px 24px rgba(0,0,0,0.25)" }}
           />
         </AbsoluteFill>
-        <div style={{ position: "absolute", left: 350, top: 690, transformOrigin: "50% 0", transform: `translateY(${(1 - phone) * 1100 + Math.sin(f / 9) * 10}px) scale(0.8)` }}>
+        <div style={{ position: "absolute", left: 350, top: 665, transformOrigin: "50% 0", transform: `translateY(${(1 - phone) * 1100 + Math.sin(f / 9) * 10}px) scale(0.92)` }}>
           <div style={{ perspective: 1600 }}>
             <div style={{ transform: `rotateY(-8deg) rotateZ(${(1 - phone) * 15}deg)` }}>
               <Phone width={380} navActive={1}>
-                <KidsScreen f={f} L={L} />
+                <KidsScreens f={f} L={L} />
               </Phone>
             </div>
           </div>
@@ -105,7 +62,7 @@ export const SolutionP: React.FC = () => {
         <Sticker x={870} y={900} at={L(CP.kidStuff)} icon="teddy" label="Enfant" color={COLORS.sun} tilt={6} />
         <Sticker x={210} y={830} at={L(CP.baby)} icon="bottle" label="Bébé" color={COLORS.lagoon} tilt={-6} />
         <Sticker x={225} y={1110} at={L(CP.unused)} icon="check" label="Presque neuf" color={COLORS.primary} tilt={-4} />
-        <Sticker x={850} y={1170} at={L(CP.cheap) + 8} icon="tag" label="Dès 3 €" color={COLORS.coral} tilt={5} />
+        <Sticker x={540} y={1285} at={L(CP.cheap) + 8} icon="teddy" label="+400 articles enfant" color={COLORS.coral} tilt={-3} />
         <Confetti at={L(CP.brand)} x={540} y={380} count={60} seed="pbrand" />
       </Camera>
     </AbsoluteFill>

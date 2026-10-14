@@ -93,14 +93,3 @@ export const COMPARE: { label: string; icon: IconName; neuf: number; swap: numbe
   { label: "Jouets", icon: "teddy", neuf: 89, swap: 15, at: CP.cToys },
   { label: "Vélo enfant", icon: "bike", neuf: 119, swap: 25, at: CP.cBike },
 ];
-
-/** Annonces affichées dans le téléphone (scène 4) — catégories réelles du site. */
-export const LISTINGS: { label: string; icon: IconName; price: number; color: string; at: number }[] = [
-  { label: "Poussette", icon: "stroller", price: 90, color: "#ffe2c2", at: CP.cheap },
-  { label: "Lot bodies 6 mois", icon: "onesie", price: 8, color: "#d8f3ee", at: CP.cheap + 5 },
-  { label: "Baskets 24", icon: "shoe", price: 10, color: "#ffd9d3", at: CP.kidStuff },
-  { label: "Peluche", icon: "teddy", price: 3, color: "#fff1c4", at: CP.kidStuff + 5 },
-  { label: "Biberons x3", icon: "bottle", price: 5, color: "#e3ecff", at: CP.baby },
-  { label: "Vélo 14 pouces", icon: "bike", price: 25, color: "#e2f5d6", at: CP.baby + 5 },
-];
-export const KID_CATEGORIES = ["Vêtements enfants", "Puériculture", "Jeux / jouets", "Chaussures enfants"];
