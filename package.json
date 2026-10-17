@@ -17,6 +17,7 @@
     "audio:voice:parents": "python3 scripts/generate_voiceover.py parents"
   },
   "dependencies": {
+    "@fontsource/instrument-sans": "^5.3.0",
     "@fontsource/poppins": "^5.3.0",
     "@remotion/cli": "^4.0.532",
     "react": "^19.3.0",
