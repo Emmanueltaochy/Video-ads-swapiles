@@ -28,6 +28,18 @@ export const M = {
 export const SAFE = { top: 250, bottom: 1920 - 670, left: 60, right: 1080 - 140 };
 export const SAFE_W = SAFE.right - SAFE.left; // 880
 
+/**
+ * Mise en page verticale (toute la zone autorisée 250 → 1250 px) :
+ * logo 284, titre 372, visuel jusqu'en bas (1245), sous-titre par-dessus le bas du visuel.
+ */
+export const LAY = { logoTop: 284, titleTop: 372, vis1: 470, vis2: 532, bottom: SAFE.bottom - 5 };
+
+/**
+ * Écrans d'interface agrandis (~ +35 %) : la capture (1170 px de large) est rendue à
+ * l'échelle UI.s et recadrée de UI.cropX px de chaque côté (marges du site).
+ */
+export const UI = { s: 0.92, cropX: 107 };
+
 /** Volume de la musique (discrète, ~ −24 LUFS). */
 export const MUSIC_VOLUME = 0.22;
 
@@ -103,7 +115,7 @@ export const CornerLogo: React.FC<{ until?: number; onTeal?: boolean }> = ({ unt
   const f = useCurrentFrame();
   if (f >= until + 10) return null;
   return (
-    <div style={{ position: "absolute", left: SAFE.left, top: SAFE.top + 14, opacity: leave(f, until, 10) }}>
+    <div style={{ position: "absolute", left: SAFE.left, top: LAY.logoTop, opacity: leave(f, until, 10) }}>
       <Logo width={196} color={onTeal ? M.white : M.logo} />
     </div>
   );
@@ -113,7 +125,7 @@ export const CornerLogo: React.FC<{ until?: number; onTeal?: boolean }> = ({ unt
 export const Title: React.FC<{ lines: string[]; at: number; top?: number; size?: number; color?: string }> = ({
   lines,
   at,
-  top = 360,
+  top = LAY.titleTop,
   size = 66,
   color = M.ink,
 }) => {
@@ -160,13 +172,13 @@ export const Subtitle: React.FC<{ cues: { from: number; to: number; lines: strin
         style={{
           background: "rgba(19,78,74,0.94)",
           borderRadius: 22,
-          padding: "16px 28px 18px",
+          padding: "16px 26px 18px",
           opacity: p,
           transform: `translateY(${(1 - p) * 10}px)`,
         }}
       >
         {cue.lines.map((l, i) => (
-          <div key={i} style={{ color: M.white, fontWeight: 600, fontSize: 44, lineHeight: 1.22, textAlign: "center", whiteSpace: "nowrap" }}>
+          <div key={i} style={{ color: M.white, fontWeight: 600, fontSize: 47, lineHeight: 1.2, textAlign: "center", whiteSpace: "nowrap" }}>
             {l}
           </div>
         ))}
@@ -202,7 +214,7 @@ export const PhotoCard: React.FC<{
         borderRadius: 36,
         overflow: "hidden",
         boxShadow: "0 24px 60px rgba(19,78,74,0.18)",
-        transform: `scale(${0.92 + 0.08 * p}) rotate(${rotate}deg)`,
+        transform: `scale(${0.92 + 0.08 * Math.min(1, p)}) rotate(${rotate}deg)`,
         opacity: Math.min(1, p * 1.5),
         background: M.white,
       }}
@@ -239,7 +251,7 @@ export const ScreenWindow: React.FC<{
         background: "#f9fafb",
         border: "2px solid #e5e7eb",
         boxShadow: "0 24px 60px rgba(19,78,74,0.16)",
-        transform: `scale(${0.94 + 0.06 * p})`,
+        transform: `scale(${0.94 + 0.06 * Math.min(1, p)})`,
         opacity: Math.min(1, p * 1.5),
       }}
     >
@@ -249,12 +261,22 @@ export const ScreenWindow: React.FC<{
 };
 
 /** Capture positionnée dans une ScreenWindow (largeur de rendu = largeur de la fenêtre). */
-export const Capture: React.FC<{ src: string; width: number; scrollY?: number; opacity?: number }> = ({ src, width, scrollY = 0, opacity = 1 }) => (
+export const Capture: React.FC<{ src: string; scrollY?: number; top?: number; opacity?: number }> = ({ src, scrollY = 0, top = 0, opacity = 1 }) => (
   <Img
     src={staticFile(src)}
-    style={{ position: "absolute", left: 0, top: 0, width, transform: `translateY(${-scrollY}px)`, opacity }}
+    style={{ position: "absolute", left: -UI.cropX * UI.s, top: top * UI.s, width: 1170 * UI.s, transform: `translateY(${-scrollY * UI.s}px)`, opacity }}
   />
 );
+
+/** Conversion d'un rectangle de capture (px capture) en px vidéo, pour une fenêtre et un défilement donnés. */
+export const uiRect = (win: { x: number; y: number }, r: { x: number; y: number; w: number; h: number }, scrollY: number) => {
+  // bornes horizontales : le cadre de mise en évidence (+8 px) reste dans la zone autorisée
+  const x0 = Math.max(win.x + (r.x - UI.cropX) * UI.s, SAFE.left + 10);
+  const x1 = Math.min(win.x + (r.x + r.w - UI.cropX) * UI.s, SAFE.right - 10);
+  return { x: x0, y: win.y + (r.y - scrollY) * UI.s, w: x1 - x0, h: r.h * UI.s };
+};
+/** Bas des fenêtres d'interface : juste au-dessus du sous-titre. */
+export const UI_BOTTOM = 1084;
 
 /** Onde de « tap » (doigt qui appuie) — repère visuel sur l'interface. */
 export const Tap: React.FC<{ x: number; y: number; at: number }> = ({ x, y, at }) => {
@@ -286,7 +308,7 @@ export const Highlight: React.FC<{ x: number; y: number; w: number; h: number; a
         borderRadius: radius,
         border: `5px solid ${M.teal}`,
         opacity: p,
-        transform: `scale(${1.06 - 0.06 * p})`,
+        transform: `scale(${0.94 + 0.06 * p})`, // grossit vers sa taille finale : ne déborde jamais de la zone
       }}
     />
   );
@@ -330,20 +352,19 @@ export const Pill: React.FC<{ text: string | string[]; x: number; y: number; at:
 /** Mention de protection sur 2 lignes (coupure propre). */
 export const PROTECTION_LINES = [`Protection acheteur${NBSP}: 10${NBSP}% du prix`, `(0,50${NBSP}€ min, 15${NBSP}€ max)`];
 
-/** Carte de fin commune : logo, « Disponible sur swapiles.com », badges stores. */
-export const EndCard: React.FC<{ at: number; title?: string[]; titleSize?: number; mention?: string }> = ({ at, title = ["swapiles.com"], titleSize = 64, mention }) => {
+/** Carte de fin commune : logo, titre (swapiles.com), badges stores — centrée au-dessus du sous-titre. */
+export const EndCard: React.FC<{ at: number; title?: string[]; titleSize?: number; mention?: string }> = ({ at, title = ["swapiles.com"], titleSize = 80, mention }) => {
   const f = useCurrentFrame();
   const logo = springIn(f, at);
   const t = enter(f, at + 6, 14);
-  const d = enter(f, at + 10, 14);
   const b = springIn(f, at + 14);
   return (
     <AbsoluteFill>
-      <div style={{ position: "absolute", left: SAFE.left, width: SAFE_W, top: 300, display: "flex", flexDirection: "column", alignItems: "center" }}>
+      <div style={{ position: "absolute", left: SAFE.left, width: SAFE_W, top: LAY.logoTop, height: 1100 - LAY.logoTop, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
         <div style={{ transform: `scale(${0.9 + 0.1 * logo})`, opacity: Math.min(1, logo * 1.5) }}>
-          <Logo width={600} color={M.logo} />
+          <Logo width={720} color={M.logo} />
         </div>
-        <div style={{ marginTop: 34, textAlign: "center", opacity: t, transform: `translateY(${(1 - t) * 20}px)` }}>
+        <div style={{ marginTop: 40, textAlign: "center", opacity: t, transform: `translateY(${(1 - t) * 20}px)` }}>
           {title.map((l, i) => (
             <div key={i} style={{ fontWeight: 700, fontSize: titleSize, lineHeight: 1.1, letterSpacing: -1, color: M.ink, whiteSpace: "nowrap" }}>
               {l}
@@ -351,12 +372,11 @@ export const EndCard: React.FC<{ at: number; title?: string[]; titleSize?: numbe
           ))}
         </div>
         {mention && (
-          <div style={{ marginTop: 16, fontWeight: 600, fontSize: 32, color: M.teal, opacity: t, whiteSpace: "nowrap" }}>{mention}</div>
+          <div style={{ marginTop: 18, fontWeight: 600, fontSize: 36, color: M.teal, opacity: t, whiteSpace: "nowrap" }}>{mention}</div>
         )}
-        <div style={{ marginTop: 26, fontWeight: 600, fontSize: 38, color: M.muted, opacity: d, whiteSpace: "nowrap" }}>Disponible sur swapiles.com</div>
-        <div style={{ marginTop: 34, display: "flex", gap: 24, transform: `scale(${0.9 + 0.1 * b})`, opacity: Math.min(1, b * 1.5) }}>
-          <AppStoreBadge height={88} />
-          <GooglePlayBadge height={88} />
+        <div style={{ marginTop: 48, display: "flex", gap: 28, transform: `scale(${0.9 + 0.1 * b})`, opacity: Math.min(1, b * 1.5) }}>
+          <AppStoreBadge height={104} />
+          <GooglePlayBadge height={104} />
         </div>
       </div>
     </AbsoluteFill>

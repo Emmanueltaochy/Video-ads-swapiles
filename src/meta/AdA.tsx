@@ -1,11 +1,10 @@
 import React from "react";
 import { Html5Audio, interpolate, staticFile, useCurrentFrame } from "remotion";
-import { Capture, CornerLogo, Decor, EndCard, Frame, Highlight, MUSIC_VOLUME, PhotoCard, Pill, SAFE, ScreenWindow, Shot, Subtitle, Tap, Title } from "./kit";
+import { Capture, CornerLogo, Decor, EndCard, Frame, Highlight, LAY, MUSIC_VOLUME, PhotoCard, Pill, SAFE, SAFE_W, ScreenWindow, Shot, Subtitle, Tap, Title, UI_BOTTOM, uiRect } from "./kit";
 import { RECTS } from "./rects";
 
-/** Fenêtre d'interface commune (px de la vidéo). */
-const WIN = { x: 100, y: 528, w: 800, h: 552 };
-const S = WIN.w / 1170; // échelle capture -> vidéo
+/** Fenêtre d'interface commune (px de la vidéo) : toute la largeur autorisée, jusqu'au sous-titre. */
+const WIN = { x: SAFE.left, y: LAY.vis2, w: SAFE_W, h: UI_BOTTOM - LAY.vis2 };
 
 /** Angle A — Vide ton dressing (15 s). Script : section « Angle A » du document de campagne. */
 export const AdA: React.FC<{ qa?: boolean }> = ({ qa }) => {
@@ -14,16 +13,18 @@ export const AdA: React.FC<{ qa?: boolean }> = ({ qa }) => {
   // 3-8 s : dépôt d'annonce animé (photo -> prix -> Publier)
   const add = RECTS["depot-photos-vide"]["add-photos"];
   const prix = RECTS["depot-prix"].prix;
-  const scrollPhotos = 380;
+  const scrollPhotos = 440;
   const tapAdd = 116;
   const prixH = RECTS["depot-prix"].h; // la capture « Publier » est empilée sous celle du prix
-  const scrollPrix = interpolate(f, [186, 200], [0, prixH + 264 - WIN.h / S], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const scrollPrix = interpolate(f, [186, 200], [300, 560], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   const tapPublish = 212;
   const prixImg = f < 158 ? "depot-prix-vide" : f < 166 ? "depot-prix-2" : "depot-prix";
+  const addR = uiRect(WIN, add, scrollPhotos);
+  const pubR = uiRect(WIN, { x: 585, y: prixH + 132, w: 0, h: 0 }, 560);
 
-  // 8-12 s : mode de remise
+  // 8-12 s : mode de remise (main propre, puis défilement vers les points relais)
   const remise = RECTS.remise;
-  const scrollRemise = 290;
+  const scrollRemise = interpolate(f, [278, 292], [300, 560], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
 
   return (
     <Frame qa={qa}>
@@ -33,55 +34,35 @@ export const AdA: React.FC<{ qa?: boolean }> = ({ qa }) => {
       {/* 0-3 s : l'armoire pleine */}
       <Shot from={0} to={88}>
         <Title lines={["Tout ça,", "en vente ce matin"]} at={0} />
-        <PhotoCard src="meta/photos/armoire.jpg" x={SAFE.left} y={WIN.y} w={880} h={WIN.h} at={0} zoom={[1.12, 1]} dur={100} />
+        <PhotoCard src="meta/photos/armoire.jpg" x={WIN.x} y={WIN.y} w={WIN.w} h={LAY.bottom - WIN.y} at={0} zoom={[1.12, 1]} dur={100} />
       </Shot>
 
       {/* 3-8 s : dépôt d'annonce */}
       <Shot from={90} to={238}>
         <Title lines={["Dépôt d’annonce", "gratuit"]} at={92} />
         <ScreenWindow {...WIN} at={92}>
-          {f < 150 && (
-            <>
-              <Capture src={`meta/ui/${f < 122 ? "depot-photos-vide" : "depot-photos-ok"}.png`} width={WIN.w} scrollY={scrollPhotos * S} />
-            </>
-          )}
+          {f < 150 && <Capture src={`meta/ui/${f < 122 ? "depot-photos-vide" : "depot-photos-ok"}.png`} scrollY={scrollPhotos} />}
           {f >= 150 && (
             <>
-              <Capture src={`meta/ui/${prixImg}.png`} width={WIN.w} scrollY={scrollPrix * S} />
-              <div style={{ position: "absolute", left: 0, top: (prixH - scrollPrix) * S, width: WIN.w }}>
-                <Capture src={`meta/ui/${f >= tapPublish && f < tapPublish + 8 ? "depot-publier-presse" : "depot-publier"}.png`} width={WIN.w} />
-              </div>
+              <Capture src={`meta/ui/${prixImg}.png`} scrollY={scrollPrix} />
+              <Capture src={`meta/ui/${f >= tapPublish && f < tapPublish + 8 ? "depot-publier-presse" : "depot-publier"}.png`} top={prixH} scrollY={scrollPrix} />
             </>
           )}
         </ScreenWindow>
-        <Tap x={WIN.x + (add.x + add.w / 2) * S} y={WIN.y + (add.y + add.h / 2 - scrollPhotos) * S} at={tapAdd} />
-        {f >= 150 && f < 186 && (
-          <Highlight x={WIN.x + prix.x * S} y={WIN.y + prix.y * S} w={prix.w * S} h={prix.h * S} at={168} radius={18} />
-        )}
-        <Tap x={WIN.x + 585 * S} y={WIN.y + (prixH + 132 - (prixH + 264 - WIN.h / S)) * S} at={tapPublish} />
-        {f >= tapPublish + 6 && <Pill text="✓ Annonce en ligne" x={322} y={436} at={tapPublish + 6} size={34} strong />}
+        <Tap x={addR.x + addR.w / 2} y={addR.y + addR.h / 2} at={tapAdd} />
+        {f >= 150 && f < 186 && <Highlight {...uiRect(WIN, prix, 300)} at={168} radius={18} />}
+        <Tap x={pubR.x} y={pubR.y} at={tapPublish} />
+        {f >= tapPublish + 6 && <Pill text="✓ Annonce en ligne" x={322} y={LAY.titleTop + 76} at={tapPublish + 6} size={34} strong />}
       </Shot>
 
       {/* 8-12 s : main propre ou point relais */}
       <Shot from={240} to={358}>
         <Title lines={["Main propre", "ou point relais"]} at={242} />
         <ScreenWindow {...WIN} at={242}>
-          <Capture src="meta/ui/remise.png" width={WIN.w} scrollY={scrollRemise * S} />
+          <Capture src="meta/ui/remise.png" scrollY={scrollRemise} />
         </ScreenWindow>
-        <Highlight
-          x={WIN.x + remise["main-propre"].x * S}
-          y={WIN.y + (remise["main-propre"].y - scrollRemise) * S}
-          w={remise["main-propre"].w * S}
-          h={remise["main-propre"].h * S}
-          at={258}
-        />
-        <Highlight
-          x={WIN.x + remise.relais.x * S}
-          y={WIN.y + (remise.relais.y - scrollRemise) * S}
-          w={remise.relais.w * S}
-          h={remise.relais.h * S}
-          at={290}
-        />
+        {f < 278 && <Highlight {...uiRect(WIN, remise["main-propre"], 300)} at={258} />}
+        {f >= 292 && <Highlight {...uiRect(WIN, remise.relais, 560)} at={294} />}
       </Shot>
 
       {/* 12-15 s : fin */}

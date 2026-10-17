@@ -1,10 +1,9 @@
 import React from "react";
 import { Html5Audio, interpolate, staticFile, useCurrentFrame } from "remotion";
-import { Capture, CornerLogo, Decor, EndCard, Frame, Highlight, MUSIC_VOLUME, PhotoCard, Pill, PROTECTION_LINES, SAFE, ScreenWindow, Shot, Subtitle, Title } from "./kit";
+import { Capture, CornerLogo, Decor, EndCard, Frame, Highlight, LAY, MUSIC_VOLUME, PhotoCard, Pill, PROTECTION_LINES, SAFE, SAFE_W, ScreenWindow, Shot, Subtitle, Title, UI_BOTTOM, uiRect } from "./kit";
 import { RECTS } from "./rects";
 
-const WIN = { x: 100, y: 612, w: 800, h: 468 };
-const S = WIN.w / 1170;
+const WIN = { x: SAFE.left, y: 600, w: SAFE_W, h: UI_BOTTOM - 600 };
 
 /** Angle B — Achète sans te faire avoir (15 s). Script : section « Angle B » du document de campagne. */
 export const AdB: React.FC<{ qa?: boolean }> = ({ qa }) => {
@@ -12,7 +11,8 @@ export const AdB: React.FC<{ qa?: boolean }> = ({ qa }) => {
   const pay = RECTS.paiement;
   // défilement : récapitulatif du prix, puis encadré « paiement protégé »
   const SCROLL0 = 560; // cadré sur le détail du prix
-  const scroll = interpolate(f, [176, 196], [SCROLL0, pay.h - WIN.h / S], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const SCROLL1 = 1090; // cadré sur l'encadré « paiement protégé »
+  const scroll = interpolate(f, [176, 196], [SCROLL0, SCROLL1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
 
   return (
     <Frame qa={qa}>
@@ -22,42 +22,25 @@ export const AdB: React.FC<{ qa?: boolean }> = ({ qa }) => {
       {/* 0-3 s : colis à la réception */}
       <Shot from={0} to={88}>
         <Title lines={["Payée à la réception"]} at={0} />
-        <PhotoCard src="meta/photos/reception.jpg" x={SAFE.left + 2} y={470} w={874} h={610} at={0} objectPosition="62% 50%" zoom={[1.1, 1]} dur={100} />
+        <PhotoCard src="meta/photos/reception.jpg" x={SAFE.left + 2} y={LAY.vis1} w={SAFE_W - 6} h={LAY.bottom - LAY.vis1} at={0} objectPosition="62% 50%" zoom={[1.1, 1]} dur={100} />
       </Shot>
 
       {/* 3-9 s : paiement protégé + détail du prix */}
       <Shot from={90} to={268}>
         <Title lines={["Paiement protégé"]} at={92} />
-        <Pill text={PROTECTION_LINES} x={SAFE.left} y={452} at={98} size={38} strong />
+        <Pill text={PROTECTION_LINES} x={SAFE.left} y={458} at={98} size={38} strong />
         <ScreenWindow {...WIN} at={100}>
-          <Capture src="meta/ui/paiement.png" width={WIN.w} scrollY={scroll * S} />
+          <Capture src="meta/ui/paiement.png" scrollY={scroll} />
         </ScreenWindow>
-        {f < 176 && (
-          <Highlight
-            x={WIN.x + pay.protection.x * S}
-            y={WIN.y + (pay.protection.y - SCROLL0) * S}
-            w={pay.protection.w * S}
-            h={pay.protection.h * S}
-            at={122}
-            radius={14}
-          />
-        )}
-        {f >= 196 && (
-          <Highlight
-            x={WIN.x + pay.note.x * S}
-            y={WIN.y + (pay.note.y - (pay.h - WIN.h / S)) * S}
-            w={pay.note.w * S}
-            h={pay.note.h * S}
-            at={200}
-          />
-        )}
+        {f < 176 && <Highlight {...uiRect(WIN, pay.protection, SCROLL0)} at={122} radius={14} />}
+        {f >= 196 && <Highlight {...uiRect(WIN, pay.note, SCROLL1)} at={200} />}
       </Shot>
 
       {/* 9-13 s : colis ouvert, vêtement déplié */}
       <Shot from={270} to={388}>
         <Title lines={["Remboursée si non reçu", "ou non conforme"]} at={272} />
-        <PhotoCard src="meta/photos/carton-ouvert.jpg" x={SAFE.left} y={560} w={500} h={500} at={274} rotate={-3} zoom={[1.06, 1]} />
-        <PhotoCard src="meta/photos/plies.jpg" x={410} y={600} w={500} h={460} at={286} rotate={3} zoom={[1.08, 1]} />
+        <PhotoCard src="meta/photos/carton-ouvert.jpg" x={SAFE.left + 12} y={548} w={560} h={600} at={274} rotate={-3} zoom={[1.06, 1]} />
+        <PhotoCard src="meta/photos/plies.jpg" x={356} y={600} w={560} h={560} at={286} rotate={3} zoom={[1.08, 1]} />
       </Shot>
 
       {/* 13-15 s : fin, avec la mention de protection */}
@@ -65,7 +48,7 @@ export const AdB: React.FC<{ qa?: boolean }> = ({ qa }) => {
         <EndCard
           at={390}
           title={["Protection acheteur : 10 % du prix", "(0,50 € min, 15 € max)"]}
-          titleSize={44}
+          titleSize={50}
           mention="Conditions sur swapiles.com"
         />
       </Shot>

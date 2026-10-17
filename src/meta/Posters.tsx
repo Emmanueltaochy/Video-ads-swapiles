@@ -16,7 +16,7 @@ type Angle = "A" | "B" | "C";
  */
 const BOX: Record<Fmt, { x: number; y: number; w: number; h: number }> = {
   feed: { x: 60, y: 60, w: 960, h: 1230 },
-  story: { x: 60, y: 262, w: 880, h: 983 },
+  story: { x: 60, y: 264, w: 880, h: 982 },
 };
 
 const COPY: Record<Angle, { title: string[]; sub: string[]; cta: string }> = {
@@ -85,8 +85,8 @@ export const Poster: React.FC<{ angle: Angle; fmt: Fmt; qa?: boolean }> = ({ ang
   const b = BOX[fmt];
   const story = fmt === "story";
   const c = COPY[angle];
-  const titleSize = story ? 70 : 76;
-  const visualH = story ? 400 : 560;
+  const titleSize = 76;
+  const visualH = story ? { A: 410, B: 420, C: 440 }[angle] : 560;
 
   const visual =
     angle === "A" ? (
@@ -108,29 +108,27 @@ export const Poster: React.FC<{ angle: Angle; fmt: Fmt; qa?: boolean }> = ({ ang
       <Decor />
       <AbsoluteFill>
         <div style={{ position: "absolute", left: b.x, top: b.y, width: b.w, height: b.h, display: "flex", flexDirection: "column" }}>
-          <Logo width={story ? 200 : 220} color={M.logo} />
-          <div style={{ marginTop: story ? 30 : 34 }}>
+          <Logo width={story ? 180 : 220} color={M.logo} style={{ flexShrink: 0 }} />
+          <div style={{ flexShrink: 0, marginTop: story ? 22 : 34 }}>
             {c.title.map((l, i) => (
               <div key={i} style={{ fontWeight: 700, fontSize: titleSize, lineHeight: 1.06, letterSpacing: -1.5, color: M.ink, whiteSpace: "nowrap" }}>{l}</div>
             ))}
           </div>
-          <div style={{ marginTop: story ? 28 : 34 }}>{visual}</div>
-          <div style={{ marginTop: story ? 26 : 34 }}>
+          <div style={{ flexShrink: 0, marginTop: story ? 24 : 34 }}>{visual}</div>
+          <div style={{ flexShrink: 0, marginTop: story ? 20 : 34 }}>
             {c.sub.map((l, i) => (
               <div key={i} style={{ fontWeight: i === 0 ? 600 : 500, fontSize: angle === "B" ? (story ? 30 : 34) : story ? 34 : 38, lineHeight: 1.3, color: i === 0 ? M.ink : M.muted, whiteSpace: "nowrap" }}>{l}</div>
             ))}
           </div>
           <div style={{ flex: 1 }} />
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <Cta text={c.cta} size={story ? 38 : 40} />
-            <div style={{ fontWeight: 700, fontSize: story ? 30 : 34, color: M.teal, whiteSpace: "nowrap" }}>swapiles.com</div>
+          <div style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <Cta text={c.cta} size={story ? 44 : 40} />
+            <div style={{ fontWeight: 700, fontSize: story ? 34 : 34, color: M.teal, whiteSpace: "nowrap" }}>swapiles.com</div>
           </div>
-          {!story && (
-            <div style={{ display: "flex", gap: 18, marginTop: 26 }}>
-              <AppStoreBadge height={70} />
-              <GooglePlayBadge height={70} />
-            </div>
-          )}
+          <div style={{ flexShrink: 0, display: "flex", gap: 18, marginTop: story ? 20 : 26 }}>
+            <AppStoreBadge height={story ? 72 : 70} />
+            <GooglePlayBadge height={story ? 72 : 70} />
+          </div>
         </div>
       </AbsoluteFill>
     </Frame>
