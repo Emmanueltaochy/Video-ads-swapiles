@@ -2,6 +2,7 @@ import React from "react";
 import { Html5Audio, interpolate, staticFile, useCurrentFrame } from "remotion";
 import { Icon, IconName } from "../components/Icons";
 import { CornerLogo, Decor, EndCard, enter, Frame, LAY, M, MUSIC_VOLUME, PhotoCard, SAFE, SAFE_W, Shot, springIn, Subtitle, Title } from "./kit";
+import { VOICE_CUES } from "./voiceCues";
 import { CITIES, REUNION_PATH, REUNION_VIEWBOX } from "./reunionGeo";
 
 /** Silhouette de La Réunion (contour réel), tracé puis rempli. */
@@ -58,7 +59,7 @@ const CityPin: React.FC<{ x: number; y: number; name: string; at: number; side: 
 const CATS: IconName[] = ["onesie", "shoe", "teddy", "home", "bike"];
 
 /** Angle C — Tout est déjà sur l'île (15 s). Script : section « Angle C » du document de campagne. */
-export const AdC: React.FC<{ qa?: boolean }> = ({ qa }) => {
+export const AdC: React.FC<{ qa?: boolean; voice?: boolean }> = ({ qa, voice }) => {
   const f = useCurrentFrame();
   const W2 = 700;
   const X2 = 110;
@@ -128,7 +129,7 @@ export const AdC: React.FC<{ qa?: boolean }> = ({ qa }) => {
       </Shot>
 
       <Subtitle
-        cues={[
+        cues={voice ? VOICE_CUES.C : [
           { from: 0, to: 90, lines: ["Une appli de seconde main", "pensée pour les îles."] },
           { from: 90, to: 240, lines: ["Les annonces sont ici, à La Réunion."] },
           { from: 240, to: 305, lines: ["Je récupère en main propre,", "en point relais chez un commerçant,"] },
@@ -136,7 +137,7 @@ export const AdC: React.FC<{ qa?: boolean }> = ({ qa }) => {
           { from: 360, to: 450, lines: ["Inscris-toi sur Swap’Îles.", "Lien juste en dessous."] },
         ]}
       />
-      {!qa && <Html5Audio src={staticFile("meta/audio/music-C.wav")} volume={MUSIC_VOLUME} />}
+      {!qa && <Html5Audio src={staticFile(voice ? "meta/voice/mix-C.wav" : "meta/audio/music-C.wav")} volume={voice ? 1 : MUSIC_VOLUME} />}
     </Frame>
   );
 };

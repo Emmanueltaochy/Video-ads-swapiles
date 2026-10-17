@@ -30,8 +30,11 @@ export const RemotionRoot: React.FC = () => (
     {/* Campagne Meta (angles A, B, C) : vidéos 15 s 9:16 + affiches 1080×1350 et 1080×1920 */}
     <Folder name="Meta-Campagne">
       <Composition id="Meta-A" component={AdA} durationInFrames={15 * FPS} fps={FPS} width={1080} height={1920} defaultProps={{ qa: false }} />
+      <Composition id="Meta-A-voix" component={AdA} durationInFrames={15 * FPS} fps={FPS} width={1080} height={1920} defaultProps={{ qa: false, voice: true }} />
       <Composition id="Meta-B" component={AdB} durationInFrames={15 * FPS} fps={FPS} width={1080} height={1920} defaultProps={{ qa: false }} />
+      <Composition id="Meta-B-voix" component={AdB} durationInFrames={15 * FPS} fps={FPS} width={1080} height={1920} defaultProps={{ qa: false, voice: true }} />
       <Composition id="Meta-C" component={AdC} durationInFrames={15 * FPS} fps={FPS} width={1080} height={1920} defaultProps={{ qa: false }} />
+      <Composition id="Meta-C-voix" component={AdC} durationInFrames={15 * FPS} fps={FPS} width={1080} height={1920} defaultProps={{ qa: false, voice: true }} />
       {(["A", "B", "C"] as const).map((angle) => (
         <React.Fragment key={angle}>
           <Composition id={`Affiche-${angle}-1080x1350`} component={Poster} durationInFrames={1} fps={FPS} width={1080} height={1350} defaultProps={{ angle, fmt: "feed" as const, qa: false }} />

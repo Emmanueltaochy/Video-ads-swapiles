@@ -1,0 +1,23 @@
+{
+  "A": {
+    "tempo": 1.05,
+    "first_word": 0.029,
+    "voice_end": 14.53,
+    "music_vs_voice_db": -20.0,
+    "lufs": -13.9
+  },
+  "B": {
+    "tempo": 1.05,
+    "first_word": 0.029,
+    "voice_end": 14.52,
+    "music_vs_voice_db": -20.0,
+    "lufs": -14.0
+  },
+  "C": {
+    "tempo": 1.07,
+    "first_word": 0.028,
+    "voice_end": 14.48,
+    "music_vs_voice_db": -20.0,
+    "lufs": -14.0
+  }
+}

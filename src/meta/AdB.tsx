@@ -1,12 +1,13 @@
 import React from "react";
 import { Html5Audio, interpolate, staticFile, useCurrentFrame } from "remotion";
 import { Capture, CornerLogo, Decor, EndCard, Frame, Highlight, LAY, MUSIC_VOLUME, PhotoCard, Pill, PROTECTION_LINES, SAFE, SAFE_W, ScreenWindow, Shot, Subtitle, Title, UI_BOTTOM, uiRect } from "./kit";
+import { VOICE_CUES } from "./voiceCues";
 import { RECTS } from "./rects";
 
 const WIN = { x: SAFE.left, y: 600, w: SAFE_W, h: UI_BOTTOM - 600 };
 
 /** Angle B — Achète sans te faire avoir (15 s). Script : section « Angle B » du document de campagne. */
-export const AdB: React.FC<{ qa?: boolean }> = ({ qa }) => {
+export const AdB: React.FC<{ qa?: boolean; voice?: boolean }> = ({ qa, voice }) => {
   const f = useCurrentFrame();
   const pay = RECTS.paiement;
   // défilement : récapitulatif du prix, puis encadré « paiement protégé »
@@ -54,7 +55,7 @@ export const AdB: React.FC<{ qa?: boolean }> = ({ qa }) => {
       </Shot>
 
       <Subtitle
-        cues={[
+        cues={voice ? VOICE_CUES.B : [
           { from: 0, to: 90, lines: ["Sur Swap’Îles, la vendeuse est payée", "quand j’ai reçu mon colis."] },
           { from: 90, to: 170, lines: ["Je paie en ligne."] },
           { from: 170, to: 270, lines: ["L’argent reste bloqué jusqu’à ce que", "je reçoive l’article."] },
@@ -62,7 +63,7 @@ export const AdB: React.FC<{ qa?: boolean }> = ({ qa }) => {
           { from: 390, to: 450, lines: ["Swap’Îles. Lien en dessous."] },
         ]}
       />
-      {!qa && <Html5Audio src={staticFile("meta/audio/music-B.wav")} volume={MUSIC_VOLUME} />}
+      {!qa && <Html5Audio src={staticFile(voice ? "meta/voice/mix-B.wav" : "meta/audio/music-B.wav")} volume={voice ? 1 : MUSIC_VOLUME} />}
     </Frame>
   );
 };

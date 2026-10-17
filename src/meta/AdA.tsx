@@ -1,13 +1,14 @@
 import React from "react";
 import { Html5Audio, interpolate, staticFile, useCurrentFrame } from "remotion";
 import { Capture, CornerLogo, Decor, EndCard, Frame, Highlight, LAY, MUSIC_VOLUME, PhotoCard, Pill, SAFE, SAFE_W, ScreenWindow, Shot, Subtitle, Tap, Title, UI_BOTTOM, uiRect } from "./kit";
+import { VOICE_CUES } from "./voiceCues";
 import { RECTS } from "./rects";
 
 /** Fenêtre d'interface commune (px de la vidéo) : toute la largeur autorisée, jusqu'au sous-titre. */
 const WIN = { x: SAFE.left, y: LAY.vis2, w: SAFE_W, h: UI_BOTTOM - LAY.vis2 };
 
 /** Angle A — Vide ton dressing (15 s). Script : section « Angle A » du document de campagne. */
-export const AdA: React.FC<{ qa?: boolean }> = ({ qa }) => {
+export const AdA: React.FC<{ qa?: boolean; voice?: boolean }> = ({ qa, voice }) => {
   const f = useCurrentFrame();
 
   // 3-8 s : dépôt d'annonce animé (photo -> prix -> Publier)
@@ -71,14 +72,14 @@ export const AdA: React.FC<{ qa?: boolean }> = ({ qa }) => {
       </Shot>
 
       <Subtitle
-        cues={[
+        cues={voice ? VOICE_CUES.A : [
           { from: 0, to: 90, lines: ["Tout ça, je l’ai mis en vente ce matin."] },
           { from: 90, to: 240, lines: ["Une photo, un prix, c’est en ligne.", "Le dépôt est gratuit."] },
           { from: 240, to: 360, lines: ["Je remets en main propre", "ou en point relais, près de chez moi."] },
           { from: 360, to: 450, lines: ["Inscris-toi sur Swap’Îles.", "Lien juste en dessous."] },
         ]}
       />
-      {!qa && <Html5Audio src={staticFile("meta/audio/music-A.wav")} volume={MUSIC_VOLUME} />}
+      {!qa && <Html5Audio src={staticFile(voice ? "meta/voice/mix-A.wav" : "meta/audio/music-A.wav")} volume={voice ? 1 : MUSIC_VOLUME} />}
     </Frame>
   );
 };
