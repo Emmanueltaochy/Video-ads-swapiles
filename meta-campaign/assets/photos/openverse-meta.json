@@ -1,0 +1,80 @@
+{
+ "armoire": {
+  "id": "18a88504-a30e-4d29-91a4-5575205753e4",
+  "title": null,
+  "url": "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvcHgxMTQ5ODQ1LWltYWdlLWt3eXIwY3FsLmpwZw.jpg",
+  "foreign_landing_url": "https://www.rawpixel.com/image/5960899/free-public-domain-cc0-photo",
+  "creator": null,
+  "license": "cc0",
+  "license_version": "1.0",
+  "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "source": "rawpixel",
+  "width": 2345,
+  "height": 1895
+ },
+ "plies": {
+  "id": "4268367b-22ec-4a02-8241-85cd0fd23307",
+  "title": null,
+  "url": "https://images.rawpixel.com/editor_1024/cHJpdmF0ZS9zdGF0aWMvaW1hZ2Uvd2Vic2l0ZS8yMDIyLTA0L2xyL3B4MTMzNDc3My1pbWFnZS1rd3lxbjNhei5qcGc.jpg",
+  "foreign_landing_url": "https://www.rawpixel.com/image/5958360/free-public-domain-cc0-photo",
+  "creator": null,
+  "license": "cc0",
+  "license_version": "1.0",
+  "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "source": "rawpixel",
+  "width": 3005,
+  "height": 2661
+ },
+ "carton-ouvert": {
+  "id": "ff3b609f-7050-4520-bf30-8a5009a9fc11",
+  "title": "Cardboard isolated white background",
+  "url": "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvZnJib3hfb3Blbl90b3BfcGFja2FnZS1pbWFnZS1reWJlODQxby5qcGc.jpg",
+  "foreign_landing_url": "https://www.rawpixel.com/image/6040876/photo-image-white-background-public-domain-free",
+  "creator": null,
+  "license": "cc0",
+  "license_version": "1.0",
+  "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "source": "rawpixel",
+  "width": 3667,
+  "height": 3634
+ },
+ "reception": {
+  "id": "a1e3312b-53fc-413a-8360-3635b68e65ee",
+  "title": "Clipboard Hand",
+  "url": "https://cdn.stocksnap.io/img-thumbs/960w/TRKNLIGFAJ.jpg",
+  "foreign_landing_url": "https://stocksnap.io/photo/clipboard-hand-TRKNLIGFAJ",
+  "creator": "Kristin Hardwick",
+  "license": "cc0",
+  "license_version": "1.0",
+  "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "source": "stocksnap",
+  "width": 5760,
+  "height": 3840
+ },
+ "devanture": {
+  "id": "6c53ef4a-e739-42bd-83c8-3637b84177f7",
+  "title": "old-fashioned storefront brick facade",
+  "url": "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvdXB3azYxODcxODU3LXdpa2ltZWRpYS1pbWFnZS1rb3drZmZoby5qcGc.jpg",
+  "foreign_landing_url": "https://www.rawpixel.com/image/3291423/free-photo-image-apparel-brick-buildings",
+  "creator": null,
+  "license": "cc0",
+  "license_version": "1.0",
+  "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "source": "rawpixel",
+  "width": 4235,
+  "height": 2813
+ },
+ "colis-mains": {
+  "id": "0d4b8bae-fb58-4812-8036-48d13faddf0f",
+  "title": "Birthday Gift",
+  "url": "https://cdn.stocksnap.io/img-thumbs/960w/P36YO6TM0I.jpg",
+  "foreign_landing_url": "https://stocksnap.io/photo/birthday-gift-P36YO6TM0I",
+  "creator": "Porapak Apichodilok",
+  "license": "cc0",
+  "license_version": "1.0",
+  "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "source": "stocksnap",
+  "width": 4422,
+  "height": 3102
+ }
+}
