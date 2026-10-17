@@ -1,10 +1,10 @@
 """
 Reel « La vie lé chèr » (27 s) : voix off + musique + bruitages, mixés à -14 LUFS.
 
-- Voix : edge-tts « Vivienne » (gratuite), énergique (+8 %), une phrase par scène ;
+- Voix : edge-tts « Vivienne » (gratuite), posée et dynamique (+5 %), une phrase par scène ;
   accélérée (1,1× max) seulement si le tout dépasse.
-- Musique : synthèse par code (scripts/generate_music.py) : tension 0-3 s, groove ensuite,
-  ponctuations aux changements de scène, coup final à 25 s. Libre de droits.
+- Musique : synthèse par code (scripts/generate_music.py) : tension 0-3 s, groove sobre ensuite
+  (sans mélodie), transitions discrètes, accord final à 25 s. Libre de droits.
 - Bruitages synthétisés et calés sur l'image (temps identiques à src/viechere/timing.ts).
 - Musique abaissée sous la voix (env. -16 dB), remontée entre les phrases et à la fin.
 
@@ -34,14 +34,14 @@ TMP = os.path.join(OUT, "_tmp")
 SR = 44100
 FPS = 30
 TOTAL = 27.0
-gv.RATE = "+8%"
+gv.RATE = "+5%"
 
 # (début de scène, texte dit). Orthographe phonétique pour la voix ; affichage via display().
 LINES = [
     (0.0, "À La Réunion, la vie lé chère !"),
     (3.0, "Et pendant ce temps, nos armoires débordent de linge qu'on ne met plus."),
-    (7.0, "Swap-îles. La seconde main pensée pour les îles."),
-    (10.0, "Vendre, c'est gratuit. Zéro commission. Le prix que tu fixes, tu le gardes."),
+    (7.0, "Swape-île. La seconde main pensée pour les îles."),  # « Swape-île » : « souap-île » net en début de phrase
+    (10.0, "Vendre, c'est gratuit. Le prix que tu fixes, tu le gardes."),
     (14.0, "Tu récupères en main propre ? C'est gratuit pour tout le monde."),
     (18.0, "Tu préfères l'envoi ? Ton paiement est protégé jusqu'à la réception."),
     (22.0, "Le linge change de main, et il reste sur l'île. Inscris-toi, c'est en dessous !"),
@@ -49,7 +49,7 @@ LINES = [
 
 
 def display(text):
-    return text.replace("lé chère", "lé chèr").replace("Swap-îles", "Swap'Îles").replace("'", "’")
+    return text.replace("lé chère", "lé chèr").replace("Swape-île", "Swap'Îles").replace("Swap-îles", "Swap'Îles").replace("'", "’")
 
 
 def tokens(text):
@@ -151,48 +151,33 @@ def sfx_track():
         sig = sig[: len(buf) - i]
         buf[i: i + len(sig)] += sig * g
 
-    # 1 — l'île surgit, la Fournaise gronde, pluie d'étiquettes
-    at(0.0, rumble(1.8), 0.9)
-    at(0.55, noise_burst(0.9, 250, 2600, 0.01, 0.25, 0.5))  # gerbe d'eau
-    at(1.3, rumble(1.4), 0.5)
-    for i in range(TAGS):
-        at(TAG_T0 + i * TAG_DT, SFX["thud"], 0.22 + 0.05 * (i % 3))
-    # 2 — piqué dans les nuages, toit, armoire
-    at(2.95, whoosh(0.8), 0.9)
-    at(3.7, whoosh(0.6), 0.6)
-    at(4.85, SFX["thud"], 0.8)
-    at(4.85, noise_burst(0.4, 600, 5000, 0.001, 0.08, 0.35))
-    at(5.45, boom(0.6))
-    at(5.45, noise_burst(0.6, 400, 6000, 0.002, 0.15, 0.4))  # explosion de vêtements
+    # 1 — l'île surgit, la Fournaise gronde
+    at(0.0, rumble(1.8), 0.7)
+    at(0.55, noise_burst(0.9, 250, 2600, 0.01, 0.25, 0.35))  # houle
+    at(1.3, rumble(1.4), 0.4)
+    # 2 — piqué dans les nuages, intérieur de la case
+    at(2.95, whoosh(0.8), 0.7)
+    at(3.7, whoosh(0.6), 0.45)
+    at(5.4, whoosh(0.7), 0.35)  # le linge glisse hors de l'armoire
     # 3 — tourbillon puis logo
-    at(7.0, gm.riser(1.2), 1.4)
-    at(8.25, boom(1.0))
-    at(8.25, sparkle(0.35))
-    # 4 — téléphone, annonce, tampon
-    at(10.25, SFX["pop"], 0.6)
-    at(10.85, whoosh(0.45), 0.7)
-    at(11.55, SFX["ding"], 0.7)
-    at(12.35, SFX["thud"], 1.2)
-    at(12.35, boom(0.45))
-    # 5 — points lumineux, trajectoire, mains
-    at(14.2, sparkle(0.3))
-    at(14.55, whoosh(0.9), 0.6)
-    at(16.25, SFX["pop"], 0.7)
+    at(7.0, gm.riser(1.2), 0.9)
+    at(8.25, boom(0.5))
+    at(8.25, sparkle(0.2))
+    # 4 — la robe glisse dans le téléphone, annonce en ligne
+    at(10.6, whoosh(0.45), 0.5)
+    at(11.95, SFX["ding"], 0.4)
+    # 5 — trajectoire, rencontre
+    at(14.55, whoosh(0.9), 0.45)
+    at(16.2, sparkle(0.18))
     # 6 — tunnel de lumière, bouclier
-    at(18.0, gm.riser(1.2), 1.0)
-    at(18.4, whoosh(1.0), 0.7)
-    at(19.65, clang(0.5))
-    at(19.65, SFX["thud"], 0.7)
+    at(18.0, gm.riser(1.2), 0.7)
+    at(19.65, clang(0.3))
     # 7 — l'île s'illumine, recul jusqu'au logo
-    for k in range(10):
-        at(22.2 + k * 0.17, SFX["pop"], 0.18)
-    at(24.3, whoosh(0.8), 0.6)
-    at(25.0, sparkle(0.3))
+    at(24.3, whoosh(0.8), 0.45)
+    at(25.0, sparkle(0.22))
     return buf
 
 
-# temps des impacts d'étiquettes (identiques à src/viechere/timing.ts)
-TAGS, TAG_T0, TAG_DT = 14, 1.15, 0.1
 
 
 def music():
@@ -201,9 +186,9 @@ def music():
     gm.section(buf, 0.0, 3.0, bar0=2, full=False, melody=False, tension=True)
     gm.place(buf, gm.riser(0.9), 3.0 - 0.9, 1.0)
     gm.place(buf, gm.crash(), 3.0, 0.8)
-    gm.section(buf, 3.0, 25.0, bar0=0, full=True, melody=True)
-    for t in (7.0, 10.0, 14.0, 18.0, 22.0):
-        gm.impact(buf, t)
+    gm.section(buf, 3.0, 25.0, bar0=0, full=True, melody=False)  # groove sans mélodie : plus sobre
+    for t in (7.0, 14.0, 22.0):
+        gm.place(buf, gm.riser(0.45), t - 0.45, 0.5)
     gm.final_hit(buf, 25.0)
     return gm.master(buf, fade_out=0.8).mean(axis=1)
 

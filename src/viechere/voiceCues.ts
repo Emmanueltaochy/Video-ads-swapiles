@@ -20,39 +20,38 @@ export const VC_CUES: { from: number; to: number; lines: string[] }[] = [
     "lines": [
       "Swap’Îles."
     ],
-    "to": 242
+    "to": 244
   },
   {
-    "from": 242,
+    "from": 244,
     "lines": [
       "La seconde main pensée pour les îles."
     ],
-    "to": 302
+    "to": 303
   },
   {
-    "from": 302,
+    "from": 303,
     "lines": [
-      "Vendre, c’est gratuit.",
-      "Zéro commission."
+      "Vendre, c’est gratuit."
     ],
-    "to": 388
+    "to": 355
   },
   {
-    "from": 388,
+    "from": 355,
     "lines": [
       "Le prix que tu fixes, tu le gardes."
     ],
-    "to": 447
+    "to": 422
   },
   {
-    "from": 447,
+    "from": 422,
     "lines": [
       "Tu récupères en main propre ?"
     ],
-    "to": 486
+    "to": 464
   },
   {
-    "from": 486,
+    "from": 464,
     "lines": [
       "C’est gratuit pour tout le monde."
     ],
@@ -63,10 +62,10 @@ export const VC_CUES: { from: number; to: number; lines: string[] }[] = [
     "lines": [
       "Tu préfères l’envoi ?"
     ],
-    "to": 577
+    "to": 579
   },
   {
-    "from": 577,
+    "from": 579,
     "lines": [
       "Ton paiement est protégé",
       "jusqu’à la réception."
@@ -79,13 +78,13 @@ export const VC_CUES: { from: number; to: number; lines: string[] }[] = [
       "Le linge change de main,",
       "et il reste sur l’île."
     ],
-    "to": 726
+    "to": 733
   },
   {
-    "from": 726,
+    "from": 733,
     "lines": [
       "Inscris-toi, c’est en dessous !"
     ],
-    "to": 802
+    "to": 810
   }
 ];

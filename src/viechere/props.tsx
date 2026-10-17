@@ -12,7 +12,7 @@ export const PAL = {
   night: "#020b12",
   cream: "#fbf8f2",
 };
-export const CLOTH_COLORS = ["#f97316", "#facc15", "#22c55e", "#0ea5e9", "#e11d48", "#a855f7", "#f472b6", "#14b8a6", "#ffffff", "#fb7185"];
+export const CLOTH_COLORS = ["#0f766e", "#e7dcc8", "#8aa1b1", "#b4532a", "#1f3b57", "#d8b07a", "#3aa58f", "#f3efe6", "#6b4c3b", "#9fb8ad"];
 
 /* ------------------------------------------------------------------ vêtements */
 export type ClothType = "tee" | "dress" | "pants" | "shirt";
