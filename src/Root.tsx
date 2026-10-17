@@ -14,6 +14,7 @@ import { AdA } from "./meta/AdA";
 import { AdB } from "./meta/AdB";
 import { AdC } from "./meta/AdC";
 import { Poster } from "./meta/Posters";
+import { VC_DURATION, VC_FPS, VieChere } from "./viechere/VieChere";
 
 export const RemotionRoot: React.FC = () => (
   <>
@@ -28,6 +29,9 @@ export const RemotionRoot: React.FC = () => (
       <Composition id="SwapilesReelParents" component={ParentsReel} durationInFrames={PARENTS_DURATION} fps={FPS} width={HEIGHT} height={WIDTH} />
     </Folder>
     {/* Campagne Meta (angles A, B, C) : vidéos 15 s 9:16 + affiches 1080×1350 et 1080×1920 */}
+    <Folder name="Reels">
+      <Composition id="Reel-VieLeCher" component={VieChere} durationInFrames={VC_DURATION} fps={VC_FPS} width={1080} height={1920} defaultProps={{ qa: false }} />
+    </Folder>
     <Folder name="Meta-Campagne">
       <Composition id="Meta-A" component={AdA} durationInFrames={15 * FPS} fps={FPS} width={1080} height={1920} defaultProps={{ qa: false }} />
       <Composition id="Meta-A-voix" component={AdA} durationInFrames={15 * FPS} fps={FPS} width={1080} height={1920} defaultProps={{ qa: false, voice: true }} />
