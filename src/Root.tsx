@@ -15,6 +15,7 @@ import { AdB } from "./meta/AdB";
 import { AdC } from "./meta/AdC";
 import { Poster } from "./meta/Posters";
 import { VC_DURATION, VC_FPS, VieChere } from "./viechere/VieChere";
+import { ReelRobe, RR_DURATION, RR_FPS } from "./reelrobe/ReelRobe";
 
 export const RemotionRoot: React.FC = () => (
   <>
@@ -30,6 +31,7 @@ export const RemotionRoot: React.FC = () => (
     </Folder>
     {/* Campagne Meta (angles A, B, C) : vidéos 15 s 9:16 + affiches 1080×1350 et 1080×1920 */}
     <Folder name="Reels">
+      <Composition id="Reel-RobeJaune-Dynamique" component={ReelRobe} durationInFrames={RR_DURATION} fps={RR_FPS} width={1080} height={1920} defaultProps={{ withAudio: true }} />
       <Composition id="Reel-VieLeCher" component={VieChere} durationInFrames={VC_DURATION} fps={VC_FPS} width={1080} height={1920} defaultProps={{ qa: false }} />
     </Folder>
     <Folder name="Meta-Campagne">
