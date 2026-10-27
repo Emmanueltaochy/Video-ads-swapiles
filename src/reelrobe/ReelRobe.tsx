@@ -18,7 +18,7 @@ const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
 const s = (sec: number) => Math.round(sec * RR_FPS);
 
 type Enter = "cut" | "whipL" | "whipR" | "punch" | "flash";
-type ShotDef = {
+export type ShotDef = {
   src: string;
   from: number; // s (timeline)
   to: number; // s (timeline)
@@ -46,7 +46,7 @@ export const END_CARD = 18.6;
 /** Instants de transition (s) — pour les bruitages. */
 export const CUTS = [...SHOTS.slice(1).map((x) => ({ t: x.from, kind: x.enter ?? "cut" })), { t: END_CARD, kind: "punch" as Enter }];
 
-const Shot: React.FC<{ d: ShotDef }> = ({ d }) => {
+export const Shot: React.FC<{ d: ShotDef }> = ({ d }) => {
   const f = useCurrentFrame();
   const len = s(d.to - d.from);
   const [z0, z1] = d.zoom ?? [1, 1.08];
@@ -79,7 +79,7 @@ const Shot: React.FC<{ d: ShotDef }> = ({ d }) => {
 /* ------------------------------------------------------------------ textes animés */
 const pop = (f: number, at: number) => spring({ frame: f - at, fps: RR_FPS, config: { damping: 9, stiffness: 220, mass: 0.6 } });
 
-const PopText: React.FC<{
+export const PopText: React.FC<{
   lines: { text: React.ReactNode; size?: number; color?: string; bg?: string }[];
   from: number;
   to: number;
@@ -124,15 +124,15 @@ const PopText: React.FC<{
     </div>
   );
 };
-const Emo: React.FC<{ c: string }> = ({ c }) => <span style={{ fontFamily: "'Noto Color Emoji'", fontWeight: 400 }}>{c}</span>;
+export const Emo: React.FC<{ c: string }> = ({ c }) => <span style={{ fontFamily: "'Noto Color Emoji'", fontWeight: 400 }}>{c}</span>;
 
 /* ------------------------------------------------------------------ carte holographique : logo, prix, coche, confettis */
 // carte holographique : flash à 1,5 s du clip (≈ 4,96 s), carte visible dès 2,0 s (≈ 5,5 s), côté droit
 export const HOLO = { at: 5.45, x: 720, y: 770, w: 440 };
-const HoloOverlay: React.FC = () => {
+export const HoloOverlay: React.FC<{ at?: number; until?: number }> = ({ at = HOLO.at, until = 6.6 }) => {
   const f = useCurrentFrame();
-  const a = s(HOLO.at);
-  if (f < a || f >= s(6.6)) return null;
+  const a = s(at);
+  if (f < a || f >= s(until)) return null;
   const p1 = pop(f, a);
   const p2 = pop(f, a + 6);
   const p3 = pop(f, a + 12);
@@ -161,8 +161,8 @@ const HoloOverlay: React.FC = () => {
 };
 
 /* ------------------------------------------------------------------ carte de fin */
-const EndCard: React.FC = () => {
-  const f = useCurrentFrame() - s(END_CARD);
+export const EndCard: React.FC<{ at?: number; cta?: string }> = ({ at = END_CARD, cta = "Inscris-toi" }) => {
+  const f = useCurrentFrame() - s(at);
   if (f < 0) return null;
   const l = pop(f, 2);
   const w = pop(f, 10);
@@ -181,7 +181,7 @@ const EndCard: React.FC = () => {
         </div>
         <div style={{ marginTop: 40, fontFamily: FONT, fontWeight: 800, fontSize: 70, color: "#ffffff", transform: `scale(${Math.max(0, w)})` }}>swapiles.com</div>
         <div style={{ marginTop: 48, padding: "26px 80px", borderRadius: 999, background: "#f97316", fontFamily: FONT, fontWeight: 900, fontSize: 66, color: "#ffffff", boxShadow: "0 0 50px rgba(249,115,22,0.6), 0 14px 30px rgba(0,0,0,0.35)", transform: `scale(${Math.max(0, b) * pulse})`, whiteSpace: "nowrap" }}>
-          Inscris-toi
+          {cta}
         </div>
         {f > 30 && <div style={{ marginTop: 26, fontFamily: FONT, fontWeight: 800, fontSize: 64, color: "#ffffff", transform: `translateY(${Math.abs(Math.sin(f / 5)) * 16}px)` }}>↓</div>}
       </div>

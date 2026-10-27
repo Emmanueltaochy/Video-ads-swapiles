@@ -41,6 +41,8 @@ Voix off complète (71 mots, environ 23 s, « gratuit » : 0 fois) :
 
 (« Swape-île » = orthographe phonétique pour la voix ; les textes affichent « Swap'Îles ».)
 
+**Version montée (exports/swapiles-reel-v3-parcours.mp4)** : voix féminine gratuite (edge-tts, Vivienne). La voix Mylène d'ElevenLabs coûterait 900 crédits, plus que le solde actuel. Deux ajustements de prononciation pour cette voix : « plus de faux rendez-vous » (« fini les faux » était entendu « fini l'effort ») et « Swap, île ». Les coupes sont à 1,0 / 2,65 / 4,2 / 4,85 / 7,0 / 9,6 / 11,2 / 13,1 / 14,9 / 16,8 / 18,3 s et la carte de fin à 19,7 s. Le bouton de fin affiche « Télécharge l'appli ».
+
 Narration à la 2ᵉ personne : aucun personnage n'est présenté comme une vraie cliente.
 
 ## 3. Accroches alternatives (A/B test, 0–3 s)
