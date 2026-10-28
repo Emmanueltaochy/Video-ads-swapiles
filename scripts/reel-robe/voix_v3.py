@@ -1,6 +1,7 @@
 """
 Voix off du script v3 (voix féminine gratuite edge-tts, en attendant Mylène).
-Génère la voix, resserre les pauses (≤ 0,32 s) et écrit out/reel-robe/v3/audio/voix-serree.wav.
+Génère la voix, resserre les pauses (≤ 0,32 s) et écrit out/reel-robe/v3/audio/voix-serree.wav,
+puis voix-finale.wav (« Swap, île » enchaîné).
 """
 import asyncio
 import os
@@ -14,6 +15,8 @@ try:  # derrière le proxy TLS de l'environnement
 except ImportError:
     pass
 import edge_tts  # noqa: E402
+import numpy as np  # noqa: E402
+import soundfile as sf  # noqa: E402
 
 ROOT = os.path.join(os.path.dirname(__file__), "..", "..")
 A = os.path.join(ROOT, "out", "reel-robe", "v3", "audio")
@@ -43,4 +46,23 @@ async def main():
                     "-ar", "48000", os.path.join(A, "voix-serree.wav")], check=True)
 
 
-asyncio.run(main())
+if not os.path.exists(os.path.join(A, "voix-serree.wav")):
+    asyncio.run(main())
+
+# Resserre « Swap, île » : la virgule laisse ~0,35 s entre « Swap » et « île », puis ~0,25 s avant « la seconde main ».
+# Repères mesurés sur l'enveloppe de cette prise (s, dans voix-serree.wav) ; à revérifier si la voix est régénérée.
+CUTS = [(15.94, 16.24), (16.64, 16.79)]
+FADE = 0.01
+y, sr = sf.read(os.path.join(A, "voix-serree.wav"))
+f = int(FADE * sr)
+parts, last = [], 0
+for a, b in CUTS:
+    parts.append(y[last:int(a * sr)].copy())
+    last = int(b * sr)
+parts.append(y[last:].copy())
+for k, p in enumerate(parts):
+    if k > 0:
+        p[:f] *= np.linspace(0, 1, f)[:, None] if p.ndim > 1 else np.linspace(0, 1, f)
+    if k < len(parts) - 1:
+        p[-f:] *= np.linspace(1, 0, f)[:, None] if p.ndim > 1 else np.linspace(1, 0, f)
+sf.write(os.path.join(A, "voix-finale.wav"), np.concatenate(parts), sr, subtype="PCM_24")

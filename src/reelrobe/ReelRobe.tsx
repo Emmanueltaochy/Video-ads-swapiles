@@ -8,6 +8,7 @@
  */
 import React from "react";
 import { AbsoluteFill, Easing, Html5Audio, interpolate, OffthreadVideo, random, Sequence, spring, staticFile, useCurrentFrame } from "remotion";
+import { AppStoreBadge, GooglePlayBadge } from "../components/Badges";
 import { Logo } from "../components/Logo";
 
 export const RR_FPS = 30;
@@ -161,7 +162,7 @@ export const HoloOverlay: React.FC<{ at?: number; until?: number }> = ({ at = HO
 };
 
 /* ------------------------------------------------------------------ carte de fin */
-export const EndCard: React.FC<{ at?: number; cta?: string }> = ({ at = END_CARD, cta = "Inscris-toi" }) => {
+export const EndCard: React.FC<{ at?: number; cta?: string; stores?: boolean }> = ({ at = END_CARD, cta = "Inscris-toi", stores = false }) => {
   const f = useCurrentFrame() - s(at);
   if (f < 0) return null;
   const l = pop(f, 2);
@@ -183,7 +184,13 @@ export const EndCard: React.FC<{ at?: number; cta?: string }> = ({ at = END_CARD
         <div style={{ marginTop: 48, padding: "26px 80px", borderRadius: 999, background: "#f97316", fontFamily: FONT, fontWeight: 900, fontSize: 66, color: "#ffffff", boxShadow: "0 0 50px rgba(249,115,22,0.6), 0 14px 30px rgba(0,0,0,0.35)", transform: `scale(${Math.max(0, b) * pulse})`, whiteSpace: "nowrap" }}>
           {cta}
         </div>
-        {f > 30 && <div style={{ marginTop: 26, fontFamily: FONT, fontWeight: 800, fontSize: 64, color: "#ffffff", transform: `translateY(${Math.abs(Math.sin(f / 5)) * 16}px)` }}>↓</div>}
+        {stores && (
+          <div style={{ marginTop: 44, display: "flex", gap: 28, transform: `scale(${Math.max(0, pop(f, 26))})` }}>
+            <AppStoreBadge height={96} />
+            <GooglePlayBadge height={96} />
+          </div>
+        )}
+        {!stores && f > 30 && <div style={{ marginTop: 26, fontFamily: FONT, fontWeight: 800, fontSize: 64, color: "#ffffff", transform: `translateY(${Math.abs(Math.sin(f / 5)) * 16}px)` }}>↓</div>}
       </div>
     </AbsoluteFill>
   );

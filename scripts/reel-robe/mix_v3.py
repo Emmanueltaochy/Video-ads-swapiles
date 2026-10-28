@@ -42,7 +42,7 @@ n = int(TOTAL * SR)
 meter = pyln.Meter(SR)
 
 voice = np.zeros(n)
-v = load(os.path.join(A, "voix-serree.wav"))
+v = load(os.path.join(A, "voix-finale.wav"))
 i = int(VOICE_AT * SR)
 voice[i: i + len(v)] = v[: n - i]
 v_lufs = meter.integrated_loudness(v)

@@ -163,7 +163,7 @@ export const ReelRobeV3: React.FC<{ withAudio?: boolean }> = ({ withAudio = true
         </div>
       </div>
     </Sequence>
-    <EndCard at={V3_END} cta="Télécharge l'appli" />
+    <EndCard at={V3_END} cta="Télécharge l'appli" stores />
     {withAudio && <Html5Audio src={staticFile("reelrobe/mix-v3.wav")} />}
   </AbsoluteFill>
 );
